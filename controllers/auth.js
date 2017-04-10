@@ -16,9 +16,8 @@ module.exports = {
                 return;
             }
             if (user) {
-
-                user.role = req.body.role;
                 user.name = req.body.name;
+                user.role = req.body.role;
                 user.emailConfirmed = false;
                 var _emailConfirmation_shortid = shortid.generate();
                 user.emailConfirmationHash = user.generateConfirmationHash(_emailConfirmation_shortid);
@@ -26,6 +25,7 @@ module.exports = {
                 user.save(function(err, newuser) {
                     if (!err) {
                         req.user = newuser;
+                        console.log(newuser);
                         mailer.sendMail_confirm_account(newuser, config.frontEndUrl + 'dashboard/confirm/' + _emailConfirmation_shortid);
                         next();
 
