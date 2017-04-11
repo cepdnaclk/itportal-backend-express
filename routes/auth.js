@@ -32,12 +32,18 @@ router.post('/login', passport.authenticate('local-login'), function(req, res) {
     })
 });
 router.post('/refreshtoken', isValidToken, function(req, res) {
+    let _user = req.user;
+    delete _user.iat;
+    delete _user.exp;
+
+    console.log(_user);
+
     let _token = jwt.sign(_user, config.secret, {
         expiresIn: '1hr'
     });
 
     res.status(200).send({
-        message: req.flashMessage,
+        message: 'Token refreshed successfully',
         token: _token,
     })
 });
@@ -112,6 +118,7 @@ function isValidToken(req, res, next) {
 
     jwt.verify(token, config.secret, function(err, decoded) {
         if (!err) {
+            req.user = decoded;
             next();
         } else {
             res.status(401).send({
