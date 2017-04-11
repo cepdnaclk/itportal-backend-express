@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 
-var listingModel = require('../models/listing');
+var studentModel = require('../models/student');
 var userModel = require('../models/user');
 
 const restify = require('express-restify-mongoose');
@@ -29,7 +29,7 @@ var Jimp = require('jimp');
 
 
 
-router.use(isLoggedIn);
+// router.use(isLoggedIn);
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -95,11 +95,19 @@ router.put('/photo/user', upload.single('photo'), function(req, res, next) {
 
 
 // APIs
-restify.serve(router, listingModel)
+restify.serve(router, studentModel)
 restify.serve(router, userModel)
 
 
 function isLoggedIn(req, res, next) {
+    if(!req.header('authorization')){
+        res.status(401).send({
+            signedIn: false,
+            tokenValid: false,
+            flashMessage: 'Couldn\'t find a valid token. Please sign in to retrieve a token.'
+        });
+        return;
+    }
     var token = req.header('authorization').replace('Bearer ', '');
     // console.log('[token]', token);
     jwt.verify(token, config.secret, function(err, decoded) {

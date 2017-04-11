@@ -1,12 +1,9 @@
-// app/models/user.js
-// load the things we need
 var mongoose = require('mongoose');
 var bcrypt = require('bcrypt-nodejs');
 var _ = require('lodash');
 
 
-// define the schema for our user model
-var userSchema = mongoose.Schema({
+var UserSchema = mongoose.Schema({
 
     email: {type: String, unique: true},
     password: {type: String},
@@ -44,29 +41,29 @@ var userSchema = mongoose.Schema({
 
 // methods ======================
 // generating a hash
-userSchema.methods.generateHash = function(password) {
+UserSchema.methods.generateHash = function(password) {
     return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
 };
 
 // checking if password is valid
-userSchema.methods.validPassword = function(password) {
+UserSchema.methods.validPassword = function(password) {
     return bcrypt.compareSync(password, this.password);
 };
 
 
 // generating a confirmation hash
-userSchema.methods.generateConfirmationHash = function(shortid) {
+UserSchema.methods.generateConfirmationHash = function(shortid) {
     return bcrypt.hashSync(shortid, bcrypt.genSaltSync(8), null);
 };
 // checking if confirmation hash is valid
-userSchema.methods.validConfirmationHash = function(shortid) {
+UserSchema.methods.validConfirmationHash = function(shortid) {
     return bcrypt.compareSync(shortid, this.emailConfirmationHash);
 };
 
 // // get information for jwt
-// userSchema.methods.toJSON = function() {
+// UserSchema.methods.toJSON = function() {
 //     return _.omit(this, ['password', 'emailConfirmationHash']);
 // };
 
-// create the model for users and expose it to our app
-module.exports = mongoose.model('User', userSchema);
+// create the model for Users and expose it to our app
+module.exports = mongoose.model('User', UserSchema);
