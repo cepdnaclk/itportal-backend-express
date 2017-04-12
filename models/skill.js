@@ -4,8 +4,8 @@ var bcrypt = require('bcrypt-nodejs');
 var _ = require('lodash');
 
 
-// define the schema for our Course model
-var CourseSchema = mongoose.Schema({
+// define the schema for our Skill model
+var SkillSchema = mongoose.Schema({
     type: {
         type: String,
         enum: [
@@ -26,5 +26,5 @@ var CourseSchema = mongoose.Schema({
         timestamps: true
     });
 
-// create the model for Courses and expose it to our app
-module.exports = mongoose.model('Course', CourseSchema);
+// create the model for Skills and expose it to our app
+module.exports = mongoose.model('Skill', SkillSchema);

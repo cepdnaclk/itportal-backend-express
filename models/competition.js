@@ -3,12 +3,11 @@ var Schema = mongoose.Schema;
 var bcrypt = require('bcrypt-nodejs');
 var _ = require('lodash');
 
-// define the schema for our Project model
-var ProjectSchema = mongoose.Schema({
+// define the schema for our Competition model
+var CompetitionSchema = mongoose.Schema({
     type: {
         type: String,
-        enum: ['ACADEMIC', 'TECHNICAL', 'WORK', 'OTHER'],
-        default: 'ACADEMIC'
+        enum: ['HACKATHON', 'COMPETITIVEPROGRAMMING'],
     },
     title: {type: String},
     description: {type: String},
@@ -24,5 +23,5 @@ var ProjectSchema = mongoose.Schema({
     timestamps: true
 });
 
-// create the model for Projects and expose it to our app
-module.exports = mongoose.model('Project', ProjectSchema);
+// create the model for Competitions and expose it to our app
+module.exports = mongoose.model('Competition', CompetitionSchema);

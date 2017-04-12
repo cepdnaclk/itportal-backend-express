@@ -9,6 +9,7 @@ var CourseSchema = mongoose.Schema({
 
     course_id: {type: String, unique: true},
     name: {type: String},
+    
     students: [{type: Schema.Types.ObjectId, ref: 'Student'}],
     staff: [{type: Schema.Types.ObjectId, ref: 'Staff'}],
 },
