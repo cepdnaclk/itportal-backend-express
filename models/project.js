@@ -7,7 +7,7 @@ var _ = require('lodash');
 var ProjectSchema = mongoose.Schema({
     type: {
         type: String,
-        enum: ['ACADEMIC', 'TECHNICAL', 'WORK', 'OTHER'],
+        enum: ['ACADEMIC', 'INDUSTRIAL', 'INDIVIDUAL', 'FREELANCE'],
         default: 'ACADEMIC'
     },
     title: {type: String},

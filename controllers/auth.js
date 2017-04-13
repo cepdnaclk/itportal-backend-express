@@ -1,7 +1,9 @@
 const User = require('../models/user');
+const Student = require('../models/student');
 const mailer = require('../controllers/email');
 const config = require('../config');
 const shortid = require('shortid');
+const _ = require('lodash');
 
 module.exports = {
     signup: function(req, res, next) {
@@ -18,6 +20,17 @@ module.exports = {
             if (user) {
                 user.name = req.body.name;
                 user.role = req.body.role;
+
+                if(_.indexOf(user.role, "STUDENT") >= 0){
+                    Student.create({email: user.email, StudentDetails: user._id }, function (err) {
+                        if (err){
+                            console.log(err);
+                        } else {
+                            console.log('[Signup] Student created')
+                        }
+                    });
+                }
+
                 user.emailConfirmed = false;
                 var _emailConfirmation_shortid = shortid.generate();
                 user.emailConfirmationHash = user.generateConfirmationHash(_emailConfirmation_shortid);
@@ -28,6 +41,8 @@ module.exports = {
                         console.log(newuser);
                         mailer.sendMail_confirm_account(newuser, config.frontEndUrl + 'dashboard/confirm/' + _emailConfirmation_shortid);
                         next();
+
+
 
                     } else {
                         console.log(err);

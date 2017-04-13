@@ -1,19 +1,20 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 
-var studentModel = require('../models/student');
-var userModel = require('../models/user');
+const studentModel = require('../models/student');
+const userModel = require('../models/user');
+const projectModel = require('../models/project');
 
 const restify = require('express-restify-mongoose');
 
-var jwt = require('jsonwebtoken');
-var config = require('../config');
+const jwt = require('jsonwebtoken');
+const config = require('../config');
 
 const mailer = require('../controllers/email');
 
-var mime = require('mime');
-var multer = require('multer')
-var storage = multer.diskStorage({
+const mime = require('mime');
+const multer = require('multer')
+const storage = multer.diskStorage({
     destination: function(req, file, cb) {
         cb(null, 'uploads')
     },
@@ -21,11 +22,11 @@ var storage = multer.diskStorage({
         cb(null, req.body.email + '-user-' + Date.now() + '.' + mime.extension(file.mimetype))
     }
 })
-var upload = multer({
+const upload = multer({
     storage: storage
 })
 
-var Jimp = require('jimp');
+const Jimp = require('jimp');
 
 
 
@@ -38,6 +39,7 @@ router.get('/', function(req, res, next) {
     });
 });
 
+// router.get('/v1', v1_api)
 
 // Image uploads
 router.put('/photo/user', upload.single('photo'), function(req, res, next) {
@@ -97,6 +99,7 @@ router.put('/photo/user', upload.single('photo'), function(req, res, next) {
 // APIs
 restify.serve(router, studentModel)
 restify.serve(router, userModel)
+restify.serve(router, projectModel)
 
 
 function isLoggedIn(req, res, next) {
