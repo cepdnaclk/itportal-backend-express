@@ -1,7 +1,9 @@
 const express = require('express');
 const router = express.Router();
 
+const restify = require('express-restify-mongoose');
 
+const studentModel = require('../../models/student');
 /*
 	 d888b  d88888b d888888b
 	88' Y8b 88'     `~~88~~'
@@ -20,5 +22,6 @@ router.get('/', function(req, res){
 router.get('/user', function(req, res){
 	res.send('Current user :P');
 })
+restify.serve(router, studentModel)
 
 module.exports = router;

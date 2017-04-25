@@ -22,6 +22,8 @@ module.exports = {
                 user.name = req.body.name;
                 user.role = req.body.role;
 
+                console.log(user.role);
+
                 if(_.indexOf(user.role, "STUDENT") >= 0){
                     Student.create({email: user.email, StudentDetails: user._id }, function (err) {
                         if (err){
