@@ -19,7 +19,7 @@ $ export NODE_ENV="DEVELOPMENT"
 
 or on windows
 ```bash
-set NODE_ENV DEVELOPMENT
+set NODE_ENV=DEVELOPMENT
 ```
 ### Start the server
 
