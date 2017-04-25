@@ -32,6 +32,7 @@ const flash    = require('connect-flash');
 
 const auth = require('./routes/auth');
 const api = require('./routes/api');
+const v1_api = require('./routes/v1');
 const welcome = require('./routes/welcome');
 const test = require('./routes/test');
 
@@ -77,6 +78,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', welcome);
 app.use('/auth', auth);
+app.use('/api/v1', v1_api);
 app.use('/api', api);
 app.use('/test', test);
 

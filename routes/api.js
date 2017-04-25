@@ -30,7 +30,8 @@ const Jimp = require('jimp');
 
 
 
-// router.use(isLoggedIn);
+
+router.use(isLoggedIn);
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -38,8 +39,6 @@ router.get('/', function(req, res, next) {
         message: 'welcome to secured api!'
     });
 });
-
-// router.get('/v1', v1_api)
 
 // Image uploads
 router.put('/photo/user', upload.single('photo'), function(req, res, next) {

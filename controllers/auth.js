@@ -1,5 +1,6 @@
 const User = require('../models/user');
 const Student = require('../models/student');
+const OrganizationRep = require('../models/organizationRep');
 const mailer = require('../controllers/email');
 const config = require('../config');
 const shortid = require('shortid');
@@ -27,6 +28,15 @@ module.exports = {
                             console.log(err);
                         } else {
                             console.log('[Signup] Student created')
+                        }
+                    });
+                }
+                if(_.indexOf(user.role, "COMPANY") >= 0){
+                    OrganizationRep.create({email: user.email, OrganizationRepDetails: user._id }, function (err) {
+                        if (err){
+                            console.log(err);
+                        } else {
+                            console.log('[Signup] OrganizationRep created')
                         }
                     });
                 }
