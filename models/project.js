@@ -1,3 +1,5 @@
+const Student = require('../models/student');
+
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var bcrypt = require('bcrypt-nodejs');
@@ -10,19 +12,63 @@ var ProjectSchema = mongoose.Schema({
         enum: ['ACADEMIC', 'INDUSTRIAL', 'INDIVIDUAL', 'FREELANCE'],
         default: 'ACADEMIC'
     },
-    title: {type: String},
-    description: {type: String},
+    title: {
+        type: String
+    },
+    description: {
+        type: String
+    },
 
-    dateStarted: {type: Date},
-    dateEnded: {type: Date},
+    dateStarted: {
+        type: Date
+    },
+    dateEnded: {
+        type: Date
+    },
 
-    members: [{ type: Schema.Types.ObjectId, ref: 'Student' }],
-    leaders: [{ type: Schema.Types.ObjectId, ref: 'Student' }],
-    mentors: [{ type: Schema.Types.ObjectId, ref: 'Staff' }],
+    members: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Student'
+    }],
+    leaders: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Student'
+    }],
+    mentors: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Staff'
+    }],
+
+    authorEmail: {
+        type: String,
+        required: true
+    },
 
 }, {
     timestamps: true
 });
+
+ProjectSchema.post('save', function(doc) {
+    console.log('%s has been saved for %s', doc._id, doc.authorEmail);
+
+    if (doc.type === "ACADEMIC") {
+        Student.findOne({
+            email: doc.authorEmail
+        }, function(err, student) {
+            if (err) {
+                console.log('something went wrong:', err)
+            }
+            if(!student){
+                console.log('student not found:', student)
+            }
+            
+            student.projects.push(doc._id);
+            student.save(function(err) {
+                if (err) console.log(err);
+            });
+        });
+    }
+})
 
 // create the model for Projects and expose it to our app
 module.exports = mongoose.model('Project', ProjectSchema);
