@@ -1,4 +1,5 @@
 const Student = require('../models/student');
+const CompanyRep = require('../models/organizationRep');
 
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
@@ -43,27 +44,51 @@ var ProjectSchema = mongoose.Schema({
         type: String,
         required: true
     },
+    authorType: {
+        type: String,
+        required: true
+    },
 
 }, {
     timestamps: true
 });
 
 ProjectSchema.post('save', function(doc) {
-    console.log('%s has been saved for %s', doc._id, doc.authorEmail);
+    console.log('%s has been saved for %s :: %s', doc._id, doc.authorEmail, doc.authorType);
 
-    if (doc.type === "ACADEMIC") {
+    if (doc.authorType === "student") {
         Student.findOne({
             email: doc.authorEmail
         }, function(err, student) {
             if (err) {
                 console.log('something went wrong:', err)
+                return;
             }
             if(!student){
                 console.log('student not found:', student)
+                return;
             }
             
             student.projects.push(doc._id);
             student.save(function(err) {
+                if (err) console.log(err);
+            });
+        });
+    } else if (doc.authorType === "companyRep") {
+        CompanyRep.findOne({
+            email: doc.authorEmail
+        }, function(err, companyRep) {
+            if (err) {
+                console.log('something went wrong:', err)
+                return;
+            }
+            if(!companyRep){
+                console.log('companyRep not found:', companyRep)
+                return;
+            }
+            
+            companyRep.projects.push(doc._id);
+            companyRep.save(function(err) {
                 if (err) console.log(err);
             });
         });

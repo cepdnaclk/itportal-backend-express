@@ -4,6 +4,7 @@ const router = express.Router();
 const studentModel = require('../models/student');
 const userModel = require('../models/user');
 const projectModel = require('../models/project');
+const organizationModel = require('../models/organization');
 
 const restify = require('express-restify-mongoose');
 
@@ -99,6 +100,7 @@ router.put('/photo/user', upload.single('photo'), function(req, res, next) {
 restify.serve(router, studentModel)
 restify.serve(router, userModel)
 restify.serve(router, projectModel)
+restify.serve(router, organizationModel)
 
 
 function isLoggedIn(req, res, next) {

@@ -12,6 +12,7 @@ var OrganizationRepSchema = mongoose.Schema({
     projects: [{ type: Schema.Types.ObjectId, ref: 'Project' }],
     awards: [{ type: Schema.Types.ObjectId, ref: 'Award' }],
     Interests: [{ type: Schema.Types.ObjectId, ref: 'Interest' }],
+    company: { type: Schema.Types.ObjectId, ref: 'Organization' },
 },
     {
         timestamps: true
