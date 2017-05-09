@@ -1,3 +1,6 @@
+const Student = require('../models/student');
+const CompanyRep = require('../models/organizationRep');
+
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var bcrypt = require('bcrypt-nodejs');

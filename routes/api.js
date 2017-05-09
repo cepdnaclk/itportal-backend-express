@@ -5,6 +5,11 @@ const studentModel = require('../models/student');
 const userModel = require('../models/user');
 const projectModel = require('../models/project');
 const organizationModel = require('../models/organization');
+const competitionModel = require('../models/competition');
+const awardModel = require('../models/award');
+const cocurricularModel = require('../models/cocurricular');
+const extracurricularModel = require('../models/extracurricular');
+
 
 const restify = require('express-restify-mongoose');
 
@@ -28,9 +33,6 @@ const upload = multer({
 })
 
 const Jimp = require('jimp');
-
-
-
 
 router.use(isLoggedIn);
 
@@ -101,6 +103,10 @@ restify.serve(router, studentModel)
 restify.serve(router, userModel)
 restify.serve(router, projectModel)
 restify.serve(router, organizationModel)
+restify.serve(router, competitionModel)
+restify.serve(router, awardModel)
+restify.serve(router, cocurricularModel)
+restify.serve(router, extracurricularModel)
 
 
 function isLoggedIn(req, res, next) {

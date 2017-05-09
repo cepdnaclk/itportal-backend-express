@@ -15,8 +15,8 @@ var StudentSchema = mongoose.Schema({
     projects: [{ type: Schema.Types.ObjectId, ref: 'Project' }],
     competitions: [{ type: Schema.Types.ObjectId, ref: 'Competition' }],
     awards: [{ type: Schema.Types.ObjectId, ref: 'Award' }],
-    coCurricular: [{ type: Schema.Types.ObjectId, ref: 'Cocurricular' }],
-    extraCurricular: [{ type: Schema.Types.ObjectId, ref: 'Extracurricular' }],
+    cocurriculars: [{ type: Schema.Types.ObjectId, ref: 'Cocurricular' }],
+    extracurriculars: [{ type: Schema.Types.ObjectId, ref: 'Extracurricular' }],
     Interests: [{ type: Schema.Types.ObjectId, ref: 'Interest' }],
 },
     {
