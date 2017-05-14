@@ -13,41 +13,18 @@ var ProjectSchema = mongoose.Schema({
         enum: ['ACADEMIC', 'INDUSTRIAL', 'INDIVIDUAL', 'FREELANCE'],
         default: 'ACADEMIC'
     },
-    title: {
-        type: String
-    },
-    description: {
-        type: String
-    },
+    title: {type: String},
+    description: {type: String},
 
-    dateStarted: {
-        type: Date
-    },
-    dateEnded: {
-        type: Date
-    },
+    dateStarted: { type: Date},
+    dateEnded: {type: Date},
 
-    members: [{
-        type: Schema.Types.ObjectId,
-        ref: 'Student'
-    }],
-    leaders: [{
-        type: Schema.Types.ObjectId,
-        ref: 'Student'
-    }],
-    mentors: [{
-        type: Schema.Types.ObjectId,
-        ref: 'Staff'
-    }],
+    members: [{ type: Schema.Types.ObjectId,ref: 'Student'}],
+    leaders: [{type: Schema.Types.ObjectId,ref: 'Student'}],
+    mentors: [{type: Schema.Types.ObjectId,ref: 'Staff'}],
 
-    authorEmail: {
-        type: String,
-        required: true
-    },
-    authorType: {
-        type: String,
-        required: true
-    },
+    authorEmail: {type: String,required: true},
+    authorType: {type: String,required: true},
 
 }, {
     timestamps: true
