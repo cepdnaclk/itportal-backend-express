@@ -7,9 +7,12 @@ var _ = require('lodash');
 // define the schema for our Interest model
 var InterestSchema = mongoose.Schema({
 
-    name: { type: String, unique },
-    students: [{ type: Schema.Types.ObjectId, ref: 'Student' }],
-    staff: [{ type: Schema.Types.ObjectId, ref: 'Staff' }],
+    // name: { type: String, unique: true },
+    name: { type: String},
+    description: { type: String},
+    students: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+    organizationRep: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+
 },
     {
         timestamps: true

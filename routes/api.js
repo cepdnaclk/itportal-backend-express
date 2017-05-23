@@ -10,6 +10,7 @@ const competitionModel = require('../models/competition');
 const awardModel = require('../models/award');
 const cocurricularModel = require('../models/cocurricular');
 const extracurricularModel = require('../models/extracurricular');
+const interestModel = require('../models/interest');
 
 
 const restify = require('express-restify-mongoose');
@@ -164,6 +165,7 @@ restify.serve(router, competitionModel)
 restify.serve(router, awardModel)
 restify.serve(router, cocurricularModel)
 restify.serve(router, extracurricularModel)
+restify.serve(router, interestModel)
 
 
 router.post('/organization/joinCompany', function(req, res){
@@ -219,6 +221,52 @@ router.post('/organization/joinCompany', function(req, res){
         })
 
     });
+
+})
+router.post('/interest/addProfile', function(req, res){
+    // console.log(req.user);
+    // console.log(req.body);
+
+    let _user_new_interest_id = req.body.id;
+    let _user = req.user;
+
+    interestModel.findById(_user_new_interest_id, function(err, _interest){
+        if(err){
+            console.log(err);
+            res.status(500).send('failed to get interests');
+            return;
+        }
+
+        if(_interest){
+
+            let _usertype = _user.role[0];
+
+            if(_usertype === "STUDENT"){
+                _interest.students.push(_user._id)
+            }
+            if(_usertype === "COMPANY"){
+                _interest.organizationRep.push(_user._id)
+            }
+
+            _interest.save(function(err, _saved){
+                if(err){
+                    console.log(err);
+                    res.status(500).send('failed to get interests');
+                    return;
+                }
+                res.status(200).send('success: added to interested list');
+
+
+            })
+
+        } else {
+            console.log('failed to get the specified interests');
+            res.status(500).send('failed to get the specified interests');
+            return;
+        }
+
+    })
+    
 
 })
 
