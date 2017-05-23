@@ -6,6 +6,10 @@ const mailer = require('../controllers/email');
 const Jimp = require('jimp');
 
 /* GET home page. */
+router.get('/test', function(req, res) {
+    console.log('test function');
+    res.send({testStatus: 'success'})
+});
 router.get('/testmail', function(req, res) {
     if (config.testEmailEnabled) {
         mailer.sendTestMail();

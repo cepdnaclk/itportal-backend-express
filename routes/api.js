@@ -21,6 +21,9 @@ const mailer = require('../controllers/email');
 
 const mime = require('mime');
 const multer = require('multer')
+
+const _ = require('lodash');
+
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
         cb(null, 'uploads')
@@ -37,7 +40,7 @@ const Jimp = require('jimp');
 
 router.use(isLoggedIn);
 
-/* GET home page. */
+/* show welcome message */
 router.get('/', function(req, res, next) {
     res.json({
         message: 'welcome to secured api!'
@@ -98,6 +101,58 @@ router.put('/photo/user', upload.single('photo'), function(req, res, next) {
     });
 })
 
+router.put('/photo/organization', upload.single('photo'), function(req, res, next) {
+    // console.log(req);
+    let _file_name = req.file.filename;
+    let _file = req.file.path;
+
+    console.log('public/photo/organization/large-' + _file_name);
+    Jimp.read(_file).
+    then(function(img) {
+        img.cover(256,256)
+            .quality(90)
+            .write('public/photo/organization/large-' + _file_name);
+        img.cover(64,64)
+            .quality(90)
+            .write('public/photo/organization/small-' + _file_name);
+
+
+        organizationModel.findOne({
+            id: req.body.organizationId
+        }, function(err, organization) {
+            if (err) {
+                res.status(400).send({
+                    flashMessage: 'Something went wrong in updating your account.'
+                });
+                return;
+            }
+            if (organization) {
+
+                organization.photo = _file_name;
+                organization.save(function(err, newOrganization) {
+                    if (!err) {
+                        req.organization = newOrganization;
+
+                        res.status(200).send({
+                            organization: newOrganization,
+                            flashMessage: 'Photo uploaded successfully'
+                        });
+                    }
+                })
+
+            }
+
+
+        });
+
+
+    }).catch(function(err) {
+        console.log(err)
+        res.status(500).send({
+            'flashMessage': 'Failed to resize images'
+        });
+    });
+})
 
 // APIs
 restify.serve(router, studentModel)
@@ -110,6 +165,62 @@ restify.serve(router, awardModel)
 restify.serve(router, cocurricularModel)
 restify.serve(router, extracurricularModel)
 
+
+router.post('/organization/joinCompany', function(req, res){
+    // console.log(req.user);
+    // console.log(req.body);
+
+    let _user_new_organization_id = req.body.id;
+
+    organizationModel.findOne({ organizationRepEmails: { "$in" : [req.user.email]} }, function (err, organization) {
+
+        let _user_email = req.user.email;
+        console.log(organization);
+
+        if(err){
+            console.log(err);
+            res.status(500).send({'status':'failed'});
+            return;
+        }
+
+        if(organization){
+
+            // remove from old organization
+            organization.organizationRepEmails.splice(organization.organizationRepEmails.indexOf(_user_email));
+
+            organization.save(function(err, organization){
+                if(err){
+                   res.status(500).send('failed while removing representative from organization');
+                } else if(organization){
+                    console.log('successfully removed from previous company');                
+
+                } else {
+                   res.status(500).send('failed while removing representative from organization: organization not returned');
+
+                }
+            })
+        }
+
+
+        console.log('_user_new_organization_id', _user_new_organization_id);
+        // adding to the new organization
+        organizationModel.findById(_user_new_organization_id, function(err, newOrganization){
+            newOrganization.organizationRepEmails.push(_user_email);
+            newOrganization.save(function(err, newOrganization){
+                if(err){
+                    res.status(500).send('failed while adding representative to organization');
+                } else if (newOrganization){
+                    res.status(200).send({status: 'success'});
+                } else {
+                    res.status(500).send('failed while adding representative to organization: organization not found');
+
+                }
+            })
+        })
+
+    });
+
+})
 
 function isLoggedIn(req, res, next) {
     if(!req.header('authorization')){
@@ -124,6 +235,7 @@ function isLoggedIn(req, res, next) {
     // console.log('[token]', token);
     jwt.verify(token, config.secret, function(err, decoded) {
         if (!err) {
+            req.user = decoded;
             next();
         } else {
             res.status(401).send({

@@ -12,6 +12,7 @@ var OrganizationSchema = mongoose.Schema({
     organizationRepEmails: [String],
     photo: { type: String},
     description: { type: String },
+    newOrganization: {type: Boolean, default: true}
 },
     {
         timestamps: true
@@ -19,8 +20,13 @@ var OrganizationSchema = mongoose.Schema({
 
 // add author email on save..
 OrganizationSchema.post('save', function(doc) {
+    console.log(doc);
     console.log('%s has been saved for %s :: %s', doc._id, doc.organizationRepEmails[0]);
 
+    if(!doc.newOrganization){
+        console.log('saving existing document for ogranization');
+        return;
+    }
 
     CompanyRep.findOne({
         email: doc.organizationRepEmails[0]

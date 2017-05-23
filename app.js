@@ -78,7 +78,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', welcome);
 app.use('/auth', auth);
-app.use('/api/v1', v1_api);
+// app.use('/api/v1', v1_api);
 app.use('/api', api);
 app.use('/test', test);
 
