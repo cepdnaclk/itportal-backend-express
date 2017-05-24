@@ -104,7 +104,10 @@ module.exports = {
                 }
 
             } else {
-                next();
+                res.status(400).send({
+                    flashMessage: 'Invalid user details'
+                });
+                // next();
             }
         });
 
