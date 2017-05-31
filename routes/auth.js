@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const LoggingAuth = require('../models/logging/auth');
+const LoggingUserActivity = require('../models/logging/activity');
 
 
 const passport = require('passport');
@@ -16,7 +16,7 @@ const auth_controller = require('../controllers/auth')
 /* GET home page. */
 router.get('/', function(req, res, next) {
     res.send('Welcome to auth! :P ');
-    let logging_auth = new LoggingAuth({type: 'bare_auth_route'});
+    let logging_auth = new LoggingUserActivity({type: 'bare_auth_route'});
     logging_auth.save();
 });
 
@@ -25,7 +25,7 @@ router.post('/login', passport.authenticate('local-login'), function(req, res) {
 
     // console.log(_user);
 
-    let logging_auth = new LoggingAuth({type: 'auth_login', user: _user._id});
+    let logging_auth = new LoggingUserActivity({type: 'auth_login', user: _user._id});
     logging_auth.save();
 
     let _token = jwt.sign(_user, config.secret, {
@@ -67,7 +67,7 @@ router.post('/signup', passport.authenticate('local-signup'), auth_controller.si
     delete _user.emailConfirmationHash;
 
 
-    let logging_auth = new LoggingAuth({type: 'auth_signup', user: _user._id});
+    let logging_auth = new LoggingUserActivity({type: 'auth_signup', user: _user._id});
     logging_auth.save();
 
 
@@ -84,7 +84,7 @@ router.post('/confirm', auth_controller.confirm, function(req, res) {
     delete _user.emailConfirmationHash;
 
 
-    let logging_auth = new LoggingAuth({type: 'auth_confirm', user: _user._id});
+    let logging_auth = new LoggingUserActivity({type: 'auth_confirm', user: _user._id});
     logging_auth.save();
 
     res.send({
@@ -97,7 +97,7 @@ router.post('/resendconfirmation', auth_controller.resendConfirmation, function(
 
     let _user = JSON.parse(JSON.stringify(req.user));
 
-    let logging_auth = new LoggingAuth({type: 'auth_resend_confirmation', user: _user._id});
+    let logging_auth = new LoggingUserActivity({type: 'auth_resend_confirmation', user: _user._id});
     logging_auth.save();
 
     res.status(200).send({
@@ -105,11 +105,11 @@ router.post('/resendconfirmation', auth_controller.resendConfirmation, function(
     });
 });
 
-router.post('/logout', function(req, res) {
+router.post('/logout', isLoggedIn, function(req, res) {
 
     let _user = JSON.parse(JSON.stringify(req.user));
 
-    let logging_auth = new LoggingAuth({type: 'auth_logout', user: _user._id});
+    let logging_auth = new LoggingUserActivity({type: 'auth_logout', user: _user._id});
     logging_auth.save();
 
     req.logout();

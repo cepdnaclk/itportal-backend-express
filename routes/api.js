@@ -12,6 +12,7 @@ const cocurricularModel = require('../models/cocurricular');
 const extracurricularModel = require('../models/extracurricular');
 const interestModel = require('../models/interest');
 
+const LoggingUserActivity = require('../models/logging/activity');
 
 const restify = require('express-restify-mongoose');
 
@@ -36,13 +37,22 @@ const storage = multer.diskStorage({
 const upload = multer({
     storage: storage
 })
-
+ 
 const Jimp = require('jimp');
+
+
 
 router.use(isLoggedIn);
 
+const studentApi = require('./customApi/student')(router);
+
 /* show welcome message */
 router.get('/', function(req, res, next) {
+
+    let _user = JSON.parse(JSON.stringify(req.user));
+    let logging_activity = new LoggingUserActivity({type: 'api_bare_route', user: _user._id});
+    logging_activity.save();
+
     res.json({
         message: 'welcome to secured api!'
     });
@@ -53,6 +63,11 @@ router.put('/photo/user', upload.single('photo'), function(req, res, next) {
     // console.log(req);
     let _file_name = req.file.filename;
     let _file = req.file.path;
+
+
+    let _user = JSON.parse(JSON.stringify(req.user));
+    let logging_activity = new LoggingUserActivity({type: 'api_photo_user', user: _user._id});
+    logging_activity.save();
 
     console.log('public/photo/user/large-' + _file_name);
     Jimp.read(_file).
@@ -107,6 +122,13 @@ router.put('/photo/organization', upload.single('photo'), function(req, res, nex
     let _file_name = req.file.filename;
     let _file = req.file.path;
 
+
+
+    let _user = JSON.parse(JSON.stringify(req.user));
+    let logging_activity = new LoggingUserActivity({type: 'api_photo_user', user: _user._id});
+    logging_activity.save();
+
+
     console.log('public/photo/organization/large-' + _file_name);
     Jimp.read(_file).
     then(function(img) {
@@ -156,6 +178,17 @@ router.put('/photo/organization', upload.single('photo'), function(req, res, nex
 })
 
 // APIs
+/*
+    d8888b. d88888b .d8888. d888888b d888888b d88888b db    db
+    88  `8D 88'     88'  YP `~~88~~'   `88'   88'     `8b  d8'
+    88oobY' 88ooooo `8bo.      88       88    88ooo    `8bd8'
+    88`8b   88~~~~~   `Y8b.    88       88    88~~~      88
+    88 `88. 88.     db   8D    88      .88.   88         88
+    88   YD Y88888P `8888Y'    YP    Y888888P YP         YP
+
+
+*/
+
 restify.serve(router, studentModel)
 restify.serve(router, userModel)
 restify.serve(router, projectModel)
@@ -171,6 +204,10 @@ restify.serve(router, interestModel)
 router.post('/organization/joinCompany', function(req, res){
     // console.log(req.user);
     // console.log(req.body);
+
+    let _user = JSON.parse(JSON.stringify(req.user));
+    let logging_auth = new LoggingAuth({type: 'api_organization_joinCompany', user: _user._id});
+    logging_auth.save();
 
     let _user_new_organization_id = req.body.id;
 
@@ -227,8 +264,12 @@ router.post('/interest/addProfile', function(req, res){
     // console.log(req.user);
     // console.log(req.body);
 
+
+    let _user = JSON.parse(JSON.stringify(req.user));
+    let logging_auth = new LoggingAuth({type: 'api_interest_addProfile', user: _user._id});
+    logging_auth.save();
+
     let _user_new_interest_id = req.body.id;
-    let _user = req.user;
 
     interestModel.findById(_user_new_interest_id, function(err, _interest){
         if(err){
@@ -271,6 +312,9 @@ router.post('/interest/addProfile', function(req, res){
 })
 
 function isLoggedIn(req, res, next) {
+
+    console.log(req);
+
     if(!req.header('authorization')){
         res.status(401).send({
             signedIn: false,
