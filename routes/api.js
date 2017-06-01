@@ -186,7 +186,6 @@ router.put('/photo/organization', upload.single('photo'), function(req, res, nex
     88 `88. 88.     db   8D    88      .88.   88         88
     88   YD Y88888P `8888Y'    YP    Y888888P YP         YP
 
-
 */
 
 restify.serve(router, studentModel)

@@ -6,6 +6,8 @@ module.exports = {
 
     'testEmailEnabled': true,
     'supportEmail': 'ishan@eng.pdn.ac.lk',
+    'defaultAdminEmail': 'admin@admin.com',
+    'defaultAdminPassword': 'password',
 
     'frontEndUrl': 'http://localhost:4000/',
 };

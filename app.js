@@ -51,6 +51,10 @@ if(process.env.NODE_ENV == 'DEVELOPMENT') {
   console.log('starting with PRODUCTION MongoDB base..')
 }
 
+// setup testAdmin if not present
+let newAdmin = require('./controllers/newAdmin');
+newAdmin()
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views/pages'));
 app.set('view engine', 'ejs');
