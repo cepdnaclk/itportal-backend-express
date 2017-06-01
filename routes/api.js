@@ -45,6 +45,7 @@ const Jimp = require('jimp');
 router.use(isLoggedIn);
 
 const studentApi = require('./customApi/student')(router);
+const adminAPI = require('./customApi/admin')(router);
 
 /* show welcome message */
 router.get('/', function(req, res, next) {
@@ -339,5 +340,6 @@ function isLoggedIn(req, res, next) {
     })
 
 }
+
 
 module.exports = router;

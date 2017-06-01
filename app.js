@@ -51,7 +51,7 @@ if(process.env.NODE_ENV == 'DEVELOPMENT') {
   console.log('starting with PRODUCTION MongoDB base..')
 }
 
-// setup testAdmin if not present
+// setup a default administrator account if not present
 let newAdmin = require('./controllers/newAdmin');
 newAdmin()
 

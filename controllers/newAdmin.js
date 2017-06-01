@@ -7,7 +7,7 @@ module.exports = function(){
 	console.log('Checking for existing admin accounts...')
 
 	User.findOne({ role: { "$in" : ['ADMIN']}} , function(err, user){
-		console.log(err, user)
+		// console.log(err, user)
 		if(err) {
 			console.error('something went wrong')
 			return true;
