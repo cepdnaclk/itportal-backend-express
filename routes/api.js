@@ -44,8 +44,20 @@ const Jimp = require('jimp');
 
 router.use(isLoggedIn);
 
+/*
+     .o88b. db    db .d8888. d888888b  .d88b.  .88b  d88.
+    d8P  Y8 88    88 88'  YP `~~88~~' .8P  Y8. 88'YbdP`88
+    8P      88    88 `8bo.      88    88    88 88  88  88
+    8b      88    88   `Y8b.    88    88    88 88  88  88
+    Y8b  d8 88b  d88 db   8D    88    `8b  d8' 88  88  88
+     `Y88P' ~Y8888P' `8888Y'    YP     `Y88P'  YP  YP  YP
+
+
+*/
+
 const studentApi = require('./customApi/student')(router);
 const adminAPI = require('./customApi/admin')(router);
+const companyAPI = require('./customApi/company')(router);
 
 /* show welcome message */
 router.get('/', function(req, res, next) {

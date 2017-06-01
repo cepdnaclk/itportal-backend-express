@@ -3,7 +3,7 @@ const Logging = require('../../models/logging/activity');
 
 function api(router){
 
-router.post('/student/companyPreferences', function(req, res){
+router.post('/student/companyPreferences', isStudent,function(req, res){
     let _user = req.body.user;
     let _preferences = req.body.preferences;
 
@@ -20,7 +20,7 @@ router.post('/student/companyPreferences', function(req, res){
         }
     });
 });
-router.get('/student/companyPreferences/:user', function(req, res){
+router.get('/student/companyPreferences/:user', isStudent,function(req, res){
 	let _user = req.params.user;
     console.log('user', _user)
     CompanyPreference.findOne({user:_user})
@@ -43,6 +43,17 @@ router.get('/student/companyPreferences/:user', function(req, res){
     });
 });
 
+function isStudent(req, res, next){
+    console.log('checking if a student...')
+
+    if(_.indexOf(req.user.role, 'STUDENT') !== -1){
+        next();
+        return;
+    }
+
+    res.status(401).send('Unable to authenticate as company');
+    return;
+}
 }
 
 module.exports = api;
