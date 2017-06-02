@@ -1,5 +1,6 @@
 const CompanyPreference = require('../../models/interviews/companyPreferences');
 const Logging = require('../../models/logging/activity');
+const _ = require('lodash');
 
 function api(router){
 

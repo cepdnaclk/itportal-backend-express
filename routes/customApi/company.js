@@ -1,4 +1,5 @@
 const CompanyPreference = require('../../models/interviews/companyPreferences');
+const Interview = require('../../models/interviews/interviews');
 const Organization = require('../../models/organization');
 const Logging = require('../../models/logging/activity');
 const _ = require('lodash');
@@ -90,6 +91,49 @@ router.get('/company/companyPreferences/:email', isCompany, function(req, res){
 
         res.status(200).send(_preferencesByCompany[_company_id]);
     });
+});
+
+router.post('/company/interview/new', function(req, res){
+    let _companyRep_email = req.body.companyRepEmail;
+    let _student_id = req.body.studentId;
+
+    let _company_id;
+
+    // Get the user's company id
+    Organization.findOne({ organizationRepEmails: { "$in" : [_companyRep_email]}} , function(err, company){
+        // console.log(err, company)
+        if(err) {
+            console.error('something went wrong: failed to receive company details')
+            res.status(400).send('failed to receive company details');
+            return true;
+        }
+        if(company){
+            _company_id = company._id;
+        } else {
+            console.error('something went wrong: failed to receive company details: NOT FOUND')
+            res.status(400).send('failed to receive company details');
+            return true;
+        }
+
+
+    })
+
+    let interview = new Interview();
+    interview.student = _student_id;
+    interview.company = _company_id;
+    interview.save(function(err, interview){
+        if(err){
+            res.status(400).send(err);
+            return;
+        }
+        if(!interview){
+            res.status(400).send('Something went wrong while creating the interview');
+            return;            
+        }
+
+        res.status(200).send(interview);
+    });
+
 });
 
 function isCompany(req, res, next){
