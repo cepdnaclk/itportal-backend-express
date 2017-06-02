@@ -109,6 +109,24 @@ router.post('/company/interview/new', function(req, res){
         }
         if(company){
             _company_id = company._id;
+
+            let interview = new Interview();
+            interview.student = _student_id;
+            interview.company = _company_id;
+            console.log('[interview]: _company_id', _company_id)
+            interview.save(function(err, interview){
+                if(err){
+                    res.status(400).send(err);
+                    return;
+                }
+                if(!interview){
+                    res.status(400).send('Something went wrong while creating the interview');
+                    return;            
+                }
+
+                res.status(200).send(interview);
+            });
+    
         } else {
             console.error('something went wrong: failed to receive company details: NOT FOUND')
             res.status(400).send('failed to receive company details');
@@ -118,21 +136,7 @@ router.post('/company/interview/new', function(req, res){
 
     })
 
-    let interview = new Interview();
-    interview.student = _student_id;
-    interview.company = _company_id;
-    interview.save(function(err, interview){
-        if(err){
-            res.status(400).send(err);
-            return;
-        }
-        if(!interview){
-            res.status(400).send('Something went wrong while creating the interview');
-            return;            
-        }
 
-        res.status(200).send(interview);
-    });
 
 });
 

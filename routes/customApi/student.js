@@ -1,5 +1,8 @@
 const CompanyPreference = require('../../models/interviews/companyPreferences');
 const Logging = require('../../models/logging/activity');
+const Interview = require('../../models/interviews/interviews');
+
+const ObjectId = require('mongoose').Types.ObjectId; 
 const _ = require('lodash');
 
 function api(router){
@@ -22,7 +25,7 @@ router.post('/student/companyPreferences', isStudent,function(req, res){
     });
 });
 router.get('/student/companyPreferences/:user', isStudent,function(req, res){
-	let _user = req.params.user;
+    let _user = req.params.user;
     console.log('user', _user)
     CompanyPreference.findOne({user:_user})
     .sort({'createdAt' : -1 })
@@ -36,6 +39,28 @@ router.get('/student/companyPreferences/:user', isStudent,function(req, res){
 
         if(!list) {
             res.status(200).send('preferences were not set before');
+            return;
+               
+        }
+        console.log( 'list', list );
+        res.status(200).send(list);
+    });
+});
+router.get('/student/interviews/all', isStudent, function(req, res){
+	let _student_id = req.user._id;
+    console.log('student_id', _student_id);
+
+    Interview.find({student:new ObjectId(_student_id)})
+    .populate(['company'])
+    .exec(function(err, list) {
+        if(err){
+            console.log(err);
+            res.status(400).send('failed to receive interviews');
+            return;
+        }
+
+        if(!list) {
+            res.status(200).send('interviews were not set before');
             return;
                
         }
