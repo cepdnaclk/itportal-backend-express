@@ -145,6 +145,21 @@ let logUpdates = function(err, batch) {
 
 }
 
+let getGPAForStudent = function(grades){
+
+	let _creditHours = 0;
+	let _gradePoints = 0;
+
+	_.forEach(grades, function(o){
+		_creditHours += +o.credits;
+		_gradePoints += o.credits * o.points;
+	});
+
+	let _gpa = Math.round(100 * (_gradePoints/_creditHours) )/100;
+
+	return _gpa;
+	
+}
 
 module.exports = function() {
 

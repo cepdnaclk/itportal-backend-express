@@ -30,5 +30,22 @@ router.get('/home/getCounts', function(req, res){
     
 });
 
+router.get('/all/students', function(req, res){
+
+    Students.find({})
+    .populate(['StudentDetails'])
+    .exec(function( err, students){
+        res.status(200).send(students);
+    });
+
+});
+
+router.get('/all/organizations', function(req, res){
+
+    Organizations.find({}, function( err, companies){
+        res.status(200).send(companies);
+    })    
+});
+
 }
 module.exports = api;
