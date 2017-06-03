@@ -12,7 +12,7 @@ const cocurricularModel = require('../models/cocurricular');
 const extracurricularModel = require('../models/extracurricular');
 const interestModel = require('../models/interest');
 
-const LoggingUserActivity = require('../models/logging/activity');
+const LoggingAuth = require('../models/logging/activity');
 
 const restify = require('express-restify-mongoose');
 
@@ -41,6 +41,8 @@ const upload = multer({
 const Jimp = require('jimp');
 
 
+
+const homeAPI = require('./customApi/home')(router);
 
 router.use(isLoggedIn);
 
@@ -71,7 +73,17 @@ router.get('/', function(req, res, next) {
     });
 });
 
-// Image uploads
+/*
+    d888888b .88b  d88.  .d8b.   d888b  d88888b .d8888.
+      `88'   88'YbdP`88 d8' `8b 88' Y8b 88'     88'  YP
+       88    88  88  88 88ooo88 88      88ooooo `8bo.
+       88    88  88  88 88~~~88 88  ooo 88~~~~~   `Y8b.
+      .88.   88  88  88 88   88 88. ~8~ 88.     db   8D
+    Y888888P YP  YP  YP YP   YP  Y888P  Y88888P `8888Y'
+
+
+*/
+
 router.put('/photo/user', upload.single('photo'), function(req, res, next) {
     // console.log(req);
     let _file_name = req.file.filename;
@@ -82,7 +94,7 @@ router.put('/photo/user', upload.single('photo'), function(req, res, next) {
     let logging_activity = new LoggingUserActivity({type: 'api_photo_user', user: _user._id});
     logging_activity.save();
 
-    console.log('public/photo/user/large-' + _file_name);
+    // console.log('public/photo/user/large-' + _file_name);
     Jimp.read(_file).
     then(function(img) {
         img.cover(256,256)
@@ -131,18 +143,19 @@ router.put('/photo/user', upload.single('photo'), function(req, res, next) {
 })
 
 router.put('/photo/organization', upload.single('photo'), function(req, res, next) {
-    // console.log(req);
+
+    let _organizationId = req.body.email;
     let _file_name = req.file.filename;
     let _file = req.file.path;
 
 
 
     let _user = JSON.parse(JSON.stringify(req.user));
-    let logging_activity = new LoggingUserActivity({type: 'api_photo_user', user: _user._id});
+    let logging_activity = new LoggingUserActivity({type: 'api_photo_organization', user: _user._id});
     logging_activity.save();
 
 
-    console.log('public/photo/organization/large-' + _file_name);
+    // console.log('public/photo/organization/large-' + _file_name);
     Jimp.read(_file).
     then(function(img) {
         img.cover(256,256)
@@ -152,10 +165,7 @@ router.put('/photo/organization', upload.single('photo'), function(req, res, nex
             .quality(90)
             .write('public/photo/organization/small-' + _file_name);
 
-
-        organizationModel.findOne({
-            id: req.body.organizationId
-        }, function(err, organization) {
+        organizationModel.findById(_organizationId, function(err, organization) {
             if (err) {
                 res.status(400).send({
                     flashMessage: 'Something went wrong in updating your account.'
@@ -226,7 +236,7 @@ router.post('/organization/joinCompany', function(req, res){
     organizationModel.findOne({ organizationRepEmails: { "$in" : [req.user.email]} }, function (err, organization) {
 
         let _user_email = req.user.email;
-        console.log(organization);
+        // console.log(organization);
 
         if(err){
             console.log(err);
@@ -260,10 +270,25 @@ router.post('/organization/joinCompany', function(req, res){
             newOrganization.save(function(err, newOrganization){
                 if(err){
                     res.status(500).send('failed while adding representative to organization');
+                    return;
                 } else if (newOrganization){
+
+                    organizationRepModel.findOne({email:req.user.email}, function(err, _organizationRep){
+                        if(err){
+                            console.log(err);
+                            res.status(500).send('failed while adding organization to representative');
+                            return;
+                        }
+                        _organizationRep.company = newOrganization._id;
+                        _organizationRep.save();
+                        
+                    })
+
                     res.status(200).send({status: 'success'});
+
                 } else {
                     res.status(500).send('failed while adding representative to organization: organization not found');
+                    return;
 
                 }
             })
@@ -325,7 +350,7 @@ router.post('/interest/addProfile', function(req, res){
 
 function isLoggedIn(req, res, next) {
 
-    console.log(req);
+    // console.log(req);
 
     if(!req.header('authorization')){
         res.status(401).send({

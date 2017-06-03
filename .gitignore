@@ -59,6 +59,8 @@ typings/
 
 uploads/*
 public/photo/user/*
+public/photo/organization/*
 
 !uploads/.gitkeep
 !public/photo/user/.gitkeep
+!public/photo/organization/.gitkeep

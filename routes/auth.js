@@ -105,11 +105,11 @@ router.post('/resendconfirmation', auth_controller.resendConfirmation, function(
     });
 });
 
-router.post('/logout', isLoggedIn, function(req, res) {
+router.post('/logout', function(req, res) {
 
-    let _user = JSON.parse(JSON.stringify(req.user));
+    // let _user = JSON.parse(JSON.stringify(req.user));
 
-    let logging_auth = new LoggingUserActivity({type: 'auth_logout', user: _user._id});
+    let logging_auth = new LoggingUserActivity({type: 'auth_logout'});
     logging_auth.save();
 
     req.logout();

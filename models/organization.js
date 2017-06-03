@@ -28,6 +28,9 @@ OrganizationSchema.post('save', function(doc) {
         return;
     }
 
+    doc.newOrganization = false;
+    doc.save();
+
     CompanyRep.findOne({
         email: doc.organizationRepEmails[0]
     }, function(err, companyRep) {
