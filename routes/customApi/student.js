@@ -2,6 +2,8 @@ const CompanyPreference = require('../../models/interviews/companyPreferences');
 const Logging = require('../../models/logging/activity');
 const Interview = require('../../models/interviews/interviews');
 
+const GetGPA = require('../../controllers/getResults');
+
 const ObjectId = require('mongoose').Types.ObjectId; 
 const _ = require('lodash');
 
@@ -68,29 +70,13 @@ router.get('/student/interviews/all', isStudent, function(req, res){
         res.status(200).send(list);
     });
 });
-router.get('/student/getResults/:regnum', function(req, res){
+router.get('/student/getResults', function(req, res){
 
-    let _reg_num = req.params.regnum;
+    let _reg_num = req.query.regNum;
 
     console.log('_reg_num', _reg_num);
+    res.status(200).send(GetGPA.getStudentResults(_reg_num));
 
-    Interview.find({student:new ObjectId(_student_id)})
-    .populate(['company'])
-    .exec(function(err, list) {
-        if(err){
-            console.log(err);
-            res.status(400).send('failed to receive interviews');
-            return;
-        }
-
-        if(!list) {
-            res.status(200).send('interviews were not set before');
-            return;
-               
-        }
-        console.log( 'list', list );
-        res.status(200).send(list);
-    });
 });
 
 function isStudent(req, res, next){

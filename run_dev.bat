@@ -1,1 +1,1 @@
-nodemon
+nodemon --ignore private/

@@ -87,7 +87,7 @@ let saveBatchJSON_inMemory = function(batch, data, cb){
 			let _field_name = _fields[i];
 			let _field_credits = _credits[i];
 
-			_gradesJSON[regNumber][_field_name] = { 'grade': score, 'credits': _field_credits, 'points': gpa.getGradePoints(score)}
+			_gradesJSON[regNumber][_field_name] = {'field': _field_name,  'grade': score, 'credits': _field_credits, 'points': gpa.getGradePoints(score)}
 
 		})
 
