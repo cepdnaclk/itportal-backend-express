@@ -47,8 +47,32 @@ router.get('/student/companyPreferences/:user', isStudent,function(req, res){
     });
 });
 router.get('/student/interviews/all', isStudent, function(req, res){
-	let _student_id = req.user._id;
+    let _student_id = req.user._id;
     console.log('student_id', _student_id);
+
+    Interview.find({student:new ObjectId(_student_id)})
+    .populate(['company'])
+    .exec(function(err, list) {
+        if(err){
+            console.log(err);
+            res.status(400).send('failed to receive interviews');
+            return;
+        }
+
+        if(!list) {
+            res.status(200).send('interviews were not set before');
+            return;
+               
+        }
+        console.log( 'list', list );
+        res.status(200).send(list);
+    });
+});
+router.get('/student/getResults/:regnum', function(req, res){
+
+    let _reg_num = req.params.regnum;
+
+    console.log('_reg_num', _reg_num);
 
     Interview.find({student:new ObjectId(_student_id)})
     .populate(['company'])

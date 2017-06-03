@@ -60,7 +60,9 @@ typings/
 uploads/*
 public/photo/user/*
 public/photo/organization/*
+private/results/*
 
 !uploads/.gitkeep
 !public/photo/user/.gitkeep
 !public/photo/organization/.gitkeep
+!private/results/.gitkeep

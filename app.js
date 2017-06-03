@@ -52,8 +52,8 @@ if(process.env.NODE_ENV == 'DEVELOPMENT') {
 }
 
 // setup a default administrator account if not present
-let newAdmin = require('./controllers/newAdmin');
-newAdmin()
+let newAdmin = require('./controllers/newAdmin')();
+let checkForGradeUpdates = require('./controllers/updateResults')(app);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views/pages'));

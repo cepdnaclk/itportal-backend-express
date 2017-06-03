@@ -8,6 +8,7 @@ var LoggingUserActivitySchema = mongoose.Schema({
 
     type: {type:String},
     user: { type: Schema.Types.ObjectId, ref: 'User' },
+    payload: {type:String},
 }, {
     timestamps: true
 });
