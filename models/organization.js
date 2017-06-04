@@ -14,9 +14,9 @@ var OrganizationSchema = mongoose.Schema({
     description: { type: String },
     newOrganization: {type: Boolean, default: true}
 },
-    {
-        timestamps: true
-    });
+{
+    timestamps: true
+});
 
 // add author email on save..
 OrganizationSchema.post('save', function(doc) {

@@ -12,7 +12,7 @@ const cocurricularModel = require('../models/cocurricular');
 const extracurricularModel = require('../models/extracurricular');
 const interestModel = require('../models/interest');
 
-const LoggingAuth = require('../models/logging/activity');
+const LoggingActivity = require('../models/logging/activity');
 
 const restify = require('express-restify-mongoose');
 
@@ -65,7 +65,7 @@ const companyAPI = require('./customApi/company')(router);
 router.get('/', function(req, res, next) {
 
     let _user = JSON.parse(JSON.stringify(req.user));
-    let logging_activity = new LoggingUserActivity({type: 'api_bare_route', user: _user._id});
+    let logging_activity = new LoggingActivity({type: 'api_bare_route', user: _user._id});
     logging_activity.save();
 
     res.json({
@@ -91,7 +91,7 @@ router.put('/photo/user', upload.single('photo'), function(req, res, next) {
 
 
     let _user = JSON.parse(JSON.stringify(req.user));
-    let logging_activity = new LoggingUserActivity({type: 'api_photo_user', user: _user._id});
+    let logging_activity = new LoggingActivity({type: 'api_photo_user', user: _user._id});
     logging_activity.save();
 
     // console.log('public/photo/user/large-' + _file_name);
@@ -151,7 +151,7 @@ router.put('/photo/organization', upload.single('photo'), function(req, res, nex
 
 
     let _user = JSON.parse(JSON.stringify(req.user));
-    let logging_activity = new LoggingUserActivity({type: 'api_photo_organization', user: _user._id});
+    let logging_activity = new LoggingActivity({type: 'api_photo_organization', user: _user._id});
     logging_activity.save();
 
 
@@ -178,7 +178,7 @@ router.put('/photo/organization', upload.single('photo'), function(req, res, nex
                 organization.save(function(err, newOrganization) {
                     if (!err) {
                         req.organization = newOrganization;
-
+ 
                         res.status(200).send({
                             organization: newOrganization,
                             flashMessage: 'Photo uploaded successfully'
@@ -228,7 +228,7 @@ router.post('/organization/joinCompany', function(req, res){
     // console.log(req.body);
 
     let _user = JSON.parse(JSON.stringify(req.user));
-    let logging_auth = new LoggingAuth({type: 'api_organization_joinCompany', user: _user._id});
+    let logging_auth = new LoggingActivity({type: 'api_organization_joinCompany', user: _user._id});
     logging_auth.save();
 
     let _user_new_organization_id = req.body.id;
@@ -303,7 +303,7 @@ router.post('/interest/addProfile', function(req, res){
 
 
     let _user = JSON.parse(JSON.stringify(req.user));
-    let logging_auth = new LoggingAuth({type: 'api_interest_addProfile', user: _user._id});
+    let logging_auth = new LoggingActivity({type: 'api_interest_addProfile', user: _user._id});
     logging_auth.save();
 
     let _user_new_interest_id = req.body.id;
