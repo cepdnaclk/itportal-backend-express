@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
+var ObjectId = mongoose.Types.ObjectId;
 var bcrypt = require('bcrypt-nodejs');
 var _ = require('lodash');
 
@@ -17,6 +18,21 @@ var OrganizationRepSchema = mongoose.Schema({
     {
         timestamps: true
     });
+OrganizationRepSchema.statics.addInterest = function(_user_id, _interest_id) {
+    OrganizationRepSchema.findOne({StudentDetails: new ObjectId(_user_id)}, function(err, organization_rep){
+        if(err){
+            console.log(err);
+            return;
+        }
 
+        if(organization_rep){
+            organization_rep.interests.push(_interest_id);
+            organization_rep.save();
+        } else {
+            console.log('failed to add interest', _interest_id , 'to organization_rep', _user_id)
+            return;
+        }
+    })
+};
 // create the model for OrganizationReps and expose it to our app
 module.exports = mongoose.model('OrganizationRep', OrganizationRepSchema);

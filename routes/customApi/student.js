@@ -75,7 +75,9 @@ router.get('/student/getResults', function(req, res){
     let _reg_num = req.query.regNum;
 
     console.log('_reg_num', _reg_num);
-    res.status(200).send(GetGPA.getStudentResults(_reg_num));
+    GetGPA.getStudentResults(_reg_num, function(results){
+        res.status(200).send(results);        
+    })
 
 });
 

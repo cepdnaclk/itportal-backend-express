@@ -1,6 +1,7 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var bcrypt = require('bcrypt-nodejs');
+var ObjectId = mongoose.Types.ObjectId;
 var _ = require('lodash');
 
 
@@ -17,11 +18,30 @@ var StudentSchema = mongoose.Schema({
     awards: [{ type: Schema.Types.ObjectId, ref: 'Award' }],
     cocurriculars: [{ type: Schema.Types.ObjectId, ref: 'Cocurricular' }],
     extracurriculars: [{ type: Schema.Types.ObjectId, ref: 'Extracurricular' }],
-    Interests: [{ type: Schema.Types.ObjectId, ref: 'Interest' }],
+    interests: [{ type: Schema.Types.ObjectId, ref: 'Interest' }],
 },
     {
         timestamps: true
     });
+
+
+StudentSchema.statics.addInterest = function(_user_id, _interest_id) {
+    this.findOne({StudentDetails: new ObjectId(_user_id)}, function(err, student){
+        if(err){
+            console.log(err);
+            return;
+        }
+
+        if(student){
+            student.interests.push(_interest_id);
+            student.save();
+        } else {
+            console.log('failed to add interest', _interest_id , 'to student', _user_id)
+            return;
+        }
+    })
+};
+
 
 // create the model for Students and expose it to our app
 module.exports = mongoose.model('Student', StudentSchema);

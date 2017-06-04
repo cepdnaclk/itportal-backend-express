@@ -3,6 +3,8 @@ const Organizations = require('../../models/organization');
 
 const _ = require('lodash');
 
+const GetGPA = require('../../controllers/getResults');
+
 function api(router){
 
 
@@ -33,9 +35,34 @@ router.get('/home/getCounts', function(req, res){
 router.get('/all/students', function(req, res){
 
     Students.find({})
-    .populate(['StudentDetails'])
+    .populate([
+        'StudentDetails',
+        ])
     .exec(function( err, students){
         res.status(200).send(students);
+    });
+
+});
+router.get('/profile/student/:id', function(req, res){
+
+    let _id = req.params.id;
+
+    Students.findById(_id)
+    .populate([
+        'StudentDetails',
+        // 'coursesFollowed',
+        // 'skills',
+        'projects',
+        'competitions',
+        'awards',
+        'cocurriculars',
+        'extracurriculars',
+        'interests',
+        ])
+    .exec(function( err, student){
+        GetGPA.getStudentResults(student.registrationNumber, function(results){
+            res.status(200).send({'student': student, 'academics': results});
+        });
     });
 
 });

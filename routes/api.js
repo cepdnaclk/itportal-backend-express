@@ -321,9 +321,11 @@ router.post('/interest/addProfile', function(req, res){
 
             if(_usertype === "STUDENT"){
                 _interest.students.push(_user._id)
+                studentModel.addInterest(_user._id, _user_new_interest_id);
             }
             if(_usertype === "COMPANY"){
                 _interest.organizationRep.push(_user._id)
+                organizationRepModel.addInterest(_user._id, _user_new_interest_id);
             }
 
             _interest.save(function(err, _saved){
