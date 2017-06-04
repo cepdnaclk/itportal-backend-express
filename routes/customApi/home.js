@@ -1,5 +1,6 @@
 const Students = require('../../models/student');
 const Organizations = require('../../models/organization');
+const OrganizationRep = require('../../models/organizationRep');
 
 const _ = require('lodash');
 
@@ -63,6 +64,25 @@ router.get('/profile/student/:id', function(req, res){
         GetGPA.getStudentResults(student.registrationNumber, function(results){
             res.status(200).send({'student': student, 'academics': results});
         });
+    });
+
+});
+
+router.get('/profile/organizationRepresentative/:id', function(req, res){
+
+    let _id = req.params.id;
+
+    OrganizationRep.findById(_id)
+    .populate([
+        'OrganizationRepDetails',
+        // 'skills',
+        'projects',
+        'awards',
+        'interests',
+        'company',
+    ])
+    .exec(function( err, organizationRep){
+        res.status(200).send(organizationRep);
     });
 
 });

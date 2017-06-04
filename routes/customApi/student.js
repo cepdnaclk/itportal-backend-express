@@ -1,6 +1,7 @@
 const CompanyPreference = require('../../models/interviews/companyPreferences');
 const Logging = require('../../models/logging/activity');
 const Interview = require('../../models/interviews/interviews');
+const Student = require('../../models/student');
 
 const GetGPA = require('../../controllers/getResults');
 
@@ -79,6 +80,40 @@ router.get('/student/getResults', function(req, res){
         res.status(200).send(results);        
     })
 
+});
+router.post('/student/updateRegNumber', function(req, res){
+
+    let _reg_num = req.body.reg_num;
+    let _student_id = req.body.student_id;
+
+    Student.count({registrationNumber: _reg_num})
+    .exec(function(err, count){
+        if(err){
+            res.status(400).send({status: 'Failed to read student count data'});
+            return;
+        }
+        if(count == 0){
+
+            Student.findById(_student_id, function(err, student){
+                if(err) {
+                    res.status(200).send({status: 'Failed to read student data'});
+                    return;
+                }
+                student.registrationNumber = _reg_num;
+                student.save(function(err, student){
+                    if(err){
+                        res.status(400).send({status: 'Failed to save student data'});
+                        return;
+                    }
+
+                    res.status(200).send({status: 'success'});
+
+                });
+            })
+        } else {
+            res.status(200).send({status: 'Registration Number already exists'});
+        }
+    })
 });
 
 function isStudent(req, res, next){

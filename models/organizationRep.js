@@ -12,14 +12,14 @@ var OrganizationRepSchema = mongoose.Schema({
     skills: [{ type: Schema.Types.ObjectId, ref: 'Skill' }],
     projects: [{ type: Schema.Types.ObjectId, ref: 'Project' }],
     awards: [{ type: Schema.Types.ObjectId, ref: 'Award' }],
-    Interests: [{ type: Schema.Types.ObjectId, ref: 'Interest' }],
+    interests: [{ type: Schema.Types.ObjectId, ref: 'Interest' }],
     company: { type: Schema.Types.ObjectId, ref: 'Organization' },
 },
     {
         timestamps: true
     });
 OrganizationRepSchema.statics.addInterest = function(_user_id, _interest_id) {
-    OrganizationRepSchema.findOne({StudentDetails: new ObjectId(_user_id)}, function(err, organization_rep){
+    this.findOne({OrganizationRepDetails: new ObjectId(_user_id)}, function(err, organization_rep){
         if(err){
             console.log(err);
             return;
