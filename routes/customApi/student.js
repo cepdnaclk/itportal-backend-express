@@ -1,6 +1,7 @@
 const CompanyPreference = require('../../models/interviews/companyPreferences');
 const Logging = require('../../models/logging/activity');
 const Interview = require('../../models/interviews/interviews');
+const Offer = require('../../models/interviews/offers');
 const Student = require('../../models/student');
 
 const GetGPA = require('../../controllers/getResults');
@@ -67,10 +68,114 @@ router.get('/student/interviews/all', isStudent, function(req, res){
             return;
                
         }
-        console.log( 'list', list );
+        // console.log( 'list', list );
         res.status(200).send(list);
     });
 });
+
+router.get('/student/offers/all', isStudent, function(req, res){
+    let _student_id = req.user._id;
+    console.log('student_id', _student_id);
+
+    Offer.find({student:new ObjectId(_student_id)})
+    .populate(['company'])
+    .exec(function(err, list) {
+        if(err){
+            console.log(err);
+            res.status(400).send('failed to receive offers');
+            return;
+        }
+
+        if(!list) {
+            res.status(200).send('offers were not set before');
+            return;
+               
+        }
+        // console.log( 'list', list );
+        res.status(200).send(list);
+    });
+});
+
+router.post('/student/offers/accept', isStudent, function(req, res){
+    let _student_id = req.user._id;
+    let _offer_id = req.body.offer_id;
+
+    console.log('student_id', _student_id);
+
+    Offer.findById(_offer_id)
+    .exec(function(err, offer) {
+        if(err){
+            console.log(err);
+            res.status(400).send('failed to receive offers');
+            return;
+        }
+
+        if(!offer) {
+            res.status(200).send('invalid offer');
+            return;
+               
+        }
+
+        if(_.isEqual(offer.student, new ObjectId(_student_id))){
+            offer.accepted = true;
+            offer.save(function(err, offer){
+                if(err){
+                    res.status(400).send('couldn\'t save offer');
+                    return;
+                }
+
+                console.log( 'accepted offer', _offer_id, '  student:', _student_id );
+                res.status(200).send('success');
+
+            })
+        } else {
+            console.log( 'failed to accept offer', _offer_id, '  student:', _student_id );
+            res.status(400).send('failed');
+
+        }
+    });
+});
+
+router.post('/student/offers/reject', isStudent, function(req, res){
+    let _student_id = req.user._id;
+    let _offer_id = req.body.offer_id;
+
+    console.log('student_id', _student_id);
+
+    Offer.findById(_offer_id)
+    .exec(function(err, offer) {
+        if(err){
+            console.log(err);
+            res.status(400).send('failed to receive offers');
+            return;
+        }
+
+        if(!offer) {
+            res.status(200).send('invalid offer');
+            return;
+               
+        }
+
+        if(_.isEqual(offer.student, new ObjectId(_student_id))){
+            offer.accepted = false;
+            offer.save(function(err, offer){
+                if(err){
+                    res.status(400).send('couldn\'t save offer');
+                    return;
+                }
+
+                console.log( 'accepted offer', _offer_id, '  student:', _student_id );
+                res.status(200).send('success');
+
+            })
+        } else {
+            console.log( 'failed to accept offer', _offer_id, '  student:', _student_id );
+            res.status(400).send('failed');
+
+        }
+    });
+});
+
 router.get('/student/getResults', function(req, res){
 
     let _reg_num = req.query.regNum;

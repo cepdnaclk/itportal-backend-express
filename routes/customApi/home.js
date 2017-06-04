@@ -102,9 +102,20 @@ router.get('/profile/student/:id', function(req, res){
         'interests',
         ])
     .exec(function( err, student){
-        GetGPA.getStudentResults(student.registrationNumber, function(results){
-            res.status(200).send({'student': student, 'academics': results});
-        });
+        if(err){
+            console.log(err);
+            res.status(400).send('failed to find the student');
+            return;
+        }
+        if(student){
+            GetGPA.getStudentResults(student.registrationNumber, function(results){
+                res.status(200).send({'student': student, 'academics': results});
+            });
+            
+        } else {
+            res.status(400).send('student not found');
+            return;   
+        }
     });
 
 });
