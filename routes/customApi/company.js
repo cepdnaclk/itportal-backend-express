@@ -189,7 +189,7 @@ router.post('/company/offer/new', function(req, res){
     })
 });
 
-router.get('/company/get/studentId/:userId', function(req, res){
+router.get('/company/get/student/:userId', function(req, res){
 
     let _user_id = req.params.userId;
 
@@ -203,7 +203,7 @@ router.get('/company/get/studentId/:userId', function(req, res){
 
         if(student){
             console.log(student._id);
-            res.status(200).send(student._id);
+            res.status(200).send(student);
             return;
         }
 

@@ -3,12 +3,18 @@ const fs = require('fs');
 const settings = require('../config');
 const gpa = require('../config/GPA');
 
+const Student = require('../models/student');
+
 const LoggingActivity = require('../models/logging/activity');
+
+const GetGPA = require('./getResults');
 
 const _ = require('lodash');
 
+let _pending_operations = 0;
 
 let getFiles = function(url, dest, batch, cb) {
+	_pending_operations++;
     const file = fs.createWriteStream(dest);
     const request = http.get(url, function(response) {
         response.pipe(file);
@@ -47,6 +53,7 @@ let getFiles = function(url, dest, batch, cb) {
 };
 
 let saveBatchJSON_inMemory = function(batch, data, cb){
+
 
 	if(!data){
         return cb('invalid data in gpa score files', batch)
@@ -98,15 +105,15 @@ let saveBatchJSON_inMemory = function(batch, data, cb){
 	cb(null, batch);
 
 	fs.writeFile(__dirname + '/../private/' + settings.location_results + 'marks_e' + batch + '.json', JSON.stringify(_gradesJSON), 'utf8', function(){
-		console.log('[LOG][updateResults]', 'json files written',batch);
+		console.log('[LOG][updateResults]', 'json files written: batch',batch);
 	});
 
 
 }
 
 
-
 let logUpdates = function(err, batch) {
+
     if (err) {
         console.error('[LOG][updateResults]', err);
         console.error('[LOG][updateResults]', 'trying for pre saved json files...');
@@ -131,11 +138,15 @@ let logUpdates = function(err, batch) {
         });
         logging_auth.save();
 
+
+	    _pending_operations--;
+		if(_pending_operations == 0) checkForProfileUpdates();
         return;
+        
     }
 
 
-    console.log('[LOG][updateResults]', batch);
+    console.log('[LOG][updateResults] trying batch', batch);
 
     let logging_auth = new LoggingActivity({
         type: 'server_updateResults_success',
@@ -143,23 +154,53 @@ let logUpdates = function(err, batch) {
     });
     logging_auth.save();
 
+    _pending_operations--;
+	if(_pending_operations == 0) checkForProfileUpdates();
 }
 
-let getGPAForStudent = function(grades){
 
-	let _creditHours = 0;
-	let _gradePoints = 0;
+let checkForProfileUpdates = function(){
+	Student.find({registrationNumber: {$ne: 'E/XX/XXX'}})
+	.exec(function(err, students){
+		if(err){
+			console.error(err);
+			return;
+		}
+		if(students.length>0){
 
-	_.forEach(grades, function(o){
-		_creditHours += +o.credits;
-		_gradePoints += o.credits * o.points;
-	});
+			_.forEach(students, function(o){
 
-	let _gpa = Math.round(100 * (_gradePoints/_creditHours) )/100;
+				let _n_gpa = GetGPA.getStudentGPA(o.registrationNumber);
 
-	return _gpa;
-	
+				if(!_.isEqual(o.GPA, _n_gpa)){
+					console.log('[LOG][checkForProfileUpdates]', o.GPA, _n_gpa);
+					o.GPA = _n_gpa;
+					o.save(function(err, student){
+						if(err){
+							console.error(err);
+							return;
+						}
+
+						if(student){
+							console.log('[LOG][checkForProfileUpdates] student GPA updated', student._id);
+						} else {
+							console.log('[LOG][checkForProfileUpdates] student GPA update failed', student._id);							
+						}
+
+
+					});
+				}
+
+			})
+
+		} else {
+			console.log('[LOG][checkForProfileUpdates] no students to update')
+		}
+	})
 }
+
+
+
 
 module.exports = function() {
 
