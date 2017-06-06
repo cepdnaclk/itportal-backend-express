@@ -11,6 +11,7 @@ const awardModel = require('../models/award');
 const cocurricularModel = require('../models/cocurricular');
 const extracurricularModel = require('../models/extracurricular');
 const interestModel = require('../models/interest');
+const skillModel = require('../models/skill');
 
 const LoggingActivity = require('../models/logging/activity');
 
@@ -221,6 +222,7 @@ restify.serve(router, awardModel)
 restify.serve(router, cocurricularModel)
 restify.serve(router, extracurricularModel)
 restify.serve(router, interestModel)
+restify.serve(router, skillModel)
 
 
 router.post('/organization/joinCompany', function(req, res){

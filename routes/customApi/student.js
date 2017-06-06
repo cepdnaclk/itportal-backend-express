@@ -3,6 +3,7 @@ const Logging = require('../../models/logging/activity');
 const Interview = require('../../models/interviews/interviews');
 const Offer = require('../../models/interviews/offers');
 const Student = require('../../models/student');
+const Project = require('../../models/project');
 
 const GetGPA = require('../../controllers/getResults');
 
@@ -27,6 +28,32 @@ router.post('/student/companyPreferences', isStudent,function(req, res){
             res.status(200).send('success');
         }
     });
+});
+router.post('/student/projects', isStudent,function(req, res){
+    let _user = req.body.user;
+    let _project_ids = _.map(req.body.projects, function(o){
+        return new ObjectId(o);
+    });
+
+
+
+    Project.find({_id:{$in: _project_ids}})
+    .populate(['skills'])
+    .exec(function(err, list){
+        if(err){
+            console.log(err);
+            res.status(400).send('Sending Query results for Projects failed.')
+            return;
+        }
+        if(list){
+            res.status(200).send(list);
+            return;
+        } else {
+            console.log(err);
+            res.status(400).send('No results for Projects found.')
+            return;
+        }
+    })
 });
 router.get('/student/companyPreferences/:user', isStudent,function(req, res){
     let _user = req.params.user;

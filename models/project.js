@@ -19,6 +19,8 @@ var ProjectSchema = mongoose.Schema({
     dateStarted: { type: Date},
     dateEnded: {type: Date},
 
+    skills: [{type: Schema.Types.ObjectId, ref: 'Skill'}],
+
     members: [{ type: Schema.Types.ObjectId,ref: 'Student'}],
     leaders: [{type: Schema.Types.ObjectId,ref: 'Student'}],
     mentors: [{type: Schema.Types.ObjectId,ref: 'Staff'}],

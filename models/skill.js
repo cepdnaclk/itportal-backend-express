@@ -18,9 +18,10 @@ var SkillSchema = mongoose.Schema({
             'SOFTSKILLS',
         ],
     },
-    name: { type: String, unique },
+    name: { type: String, unique: true },
     students: [{ type: Schema.Types.ObjectId, ref: 'Student' }],
     staff: [{ type: Schema.Types.ObjectId, ref: 'Staff' }],
+    oragnizationRep: [{ type: Schema.Types.ObjectId, ref: 'OrganizationRep' }],
 },
     {
         timestamps: true
