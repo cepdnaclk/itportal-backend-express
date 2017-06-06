@@ -35,8 +35,6 @@ router.post('/student/projects', isStudent,function(req, res){
         return new ObjectId(o);
     });
 
-
-
     Project.find({_id:{$in: _project_ids}})
     .populate(['skills'])
     .exec(function(err, list){
