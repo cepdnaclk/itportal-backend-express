@@ -94,13 +94,13 @@ router.get('/profile/student/:id', function(req, res){
         'StudentDetails',
         // 'coursesFollowed',
         // 'skills',
-        'projects',
         'competitions',
         'awards',
         'cocurriculars',
         'extracurriculars',
         'interests',
         ])
+    .populate({path:'projects', populate: {path: 'skills'}})
     .exec(function( err, student){
         if(err){
             console.log(err);
@@ -128,11 +128,11 @@ router.get('/profile/organizationRepresentative/:id', function(req, res){
     .populate([
         'OrganizationRepDetails',
         // 'skills',
-        'projects',
         'awards',
         'interests',
         'company',
     ])
+    .populate({path:'projects', populate: {path: 'skills'}})
     .exec(function( err, organizationRep){
         res.status(200).send(organizationRep);
     });
