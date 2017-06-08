@@ -1,5 +1,7 @@
 const CompanyPreference = require('../../models/interviews/companyPreferences');
 const Logging = require('../../models/logging/activity');
+const TextContent = require('../../models/misc/textContent');
+
 const _ = require('lodash');
 
 function api(router){
@@ -50,7 +52,7 @@ router.get('/admin/companyPreferences/:user', isAdmin, function(req, res){
 });
 
 router.get('/admin/logs', isAdmin, function(req, res){
-	
+    
 
     Logging.find({})
     .sort({'createdAt' : -1 })
@@ -69,6 +71,54 @@ router.get('/admin/logs', isAdmin, function(req, res){
         // console.log( 'list', list );
         res.status(200).send(list);
     });
+});
+
+router.post('/admin/update/text', isAdmin, function(req, res){
+
+    let _data = req.body.data;
+
+    console.log('[ADMIN][UPDATE]', _data);
+
+    _.forEach(_data, function(o){
+
+        let _label = o.label;
+        let _value = o.value;
+
+        if(_label){
+            TextContent.update({label: _label}, {label: _label, value: _value }, {upsert:true}, function(err, num){
+                if(err){
+                    res.status(400).send();
+                    return;
+                }
+                if(num){
+                    console.log('[ADMIN][UPDATE]', _label, num);
+                } else {
+                    res.status(400).send();
+                }
+            })
+        }
+        
+    })
+
+    res.send('success');
+    return;
+
+});
+router.get('/admin/content/text', isAdmin, function(req, res){
+
+    TextContent.find({}, function(err, list){
+        if(err){
+            res.status(400).send();
+            return;
+        }
+        if(list){
+            console.log('[ADMIN][CONTENT]', 'ok');
+            res.send(list);
+            return;
+        }
+        res.status(400).send();
+    })
+
 });
 
 function isAdmin(req, res, next){

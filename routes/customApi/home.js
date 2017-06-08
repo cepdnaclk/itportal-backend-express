@@ -2,6 +2,7 @@ const Students = require('../../models/student');
 const Organizations = require('../../models/organization');
 const OrganizationRep = require('../../models/organizationRep');
 
+const TextContent = require('../../models/misc/textContent')
 const _ = require('lodash');
 
 const GetGPA = require('../../controllers/getResults');
@@ -38,6 +39,24 @@ router.get('/home/getCounts', function(req, res){
             })
 
         })
+    })
+
+    
+});
+router.get('/home/gettingStarted', function(req, res){
+
+    TextContent.findOne({label: 'getting_started'}).
+    exec(function(err, data){
+        if(err){
+            res.status(404).send('getting_started_content_not_found');
+            return;
+        }
+        if(!data){
+            res.status(400).send('getting_started_content_not_found');
+            return;
+        }
+        res.status(200).send(data.value);
+        return;
     })
 
     
