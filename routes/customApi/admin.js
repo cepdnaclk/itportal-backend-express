@@ -28,7 +28,7 @@ router.get('/admin/companyPreferences', isAdmin, function(req, res){
 });
 
 router.get('/admin/companyPreferences/:user', isAdmin, function(req, res){
-	let _user = req.params.user;
+    let _user = req.params.user;
     console.log('user', _user)
     CompanyPreference.findOne({user:_user})
     .sort({'createdAt' : -1 })
@@ -41,6 +41,28 @@ router.get('/admin/companyPreferences/:user', isAdmin, function(req, res){
         }
         if(!list) {
             res.status(200).send('preferences were not set before');
+            return;
+               
+        }
+        // console.log( 'list', list );
+        res.status(200).send(list);
+    });
+});
+
+router.get('/admin/logs', isAdmin, function(req, res){
+	
+
+    Logging.find({})
+    .sort({'createdAt' : -1 })
+    .populate(['user'])
+    .exec(function(err, list) {
+        if(err){
+            console.log(err);
+            res.status(400).send('failed to receive activity logging');
+            return;
+        }
+        if(!list) {
+            res.status(200).send('no activity logging found');
             return;
                
         }
