@@ -34,6 +34,7 @@ var ProjectSchema = mongoose.Schema({
 
 ProjectSchema.post('save', function(doc) {
     console.log('%s has been saved for %s :: %s', doc._id, doc.authorEmail, doc.authorType);
+    console.log(doc.skills);
 
     if (doc.authorType === "student") {
         Student.findOne({
@@ -49,6 +50,8 @@ ProjectSchema.post('save', function(doc) {
             }
             
             student.projects.push(doc._id);
+            student.skills = _.concat(student.skills, doc.skills);
+
             student.save(function(err) {
                 if (err) console.log(err);
             });

@@ -221,6 +221,7 @@ router.get('/company/get/student/:userId', function(req, res){
     let _user_id = req.params.userId;
 
     Student.findOne({StudentDetails: new ObjectId(_user_id)})
+    .populate(['skills'])
     .exec(function(err, student){
         if(err) {
             console.log(err);
