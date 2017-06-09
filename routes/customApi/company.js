@@ -2,6 +2,7 @@ const CompanyPreference = require('../../models/interviews/companyPreferences');
 const Interview = require('../../models/interviews/interviews');
 const Offer = require('../../models/interviews/offers');
 const Organization = require('../../models/organization');
+const OrganizationRep = require('../../models/organizationRep');
 const Student = require('../../models/student');
 const Logging = require('../../models/logging/activity');
 const Project = require('../../models/project');
@@ -17,6 +18,8 @@ router.get('/company/companyPreferences/:email', isCompany, function(req, res){
     let _email = req.params.email;
     let _company_id;
 
+    console.log(_email, _company_id);
+
     // Get the user's company id
     Organization.findOne({ organizationRepEmails: { "$in" : [_email]}} , function(err, company){
         // console.log(err, company)
@@ -27,75 +30,35 @@ router.get('/company/companyPreferences/:email', isCompany, function(req, res){
         }
         if(company){
             _company_id = company._id;
+
+
+            //  Query company's preference information
+            CompanyPreference.find({organization: _company_id, admin_approved: true})
+            .sort({'createdAt' : -1 })
+            .populate(['user', 'organization'])
+            .exec(function(err, list) {
+                if(err){
+                    console.log(err);
+                    res.status(400).send('failed to receive company preferences');
+                    return;
+                }
+
+                if(!list) {
+                    res.status(200).send('preferences were not set before');
+                    return;
+                       
+                }
+
+                res.status(200).send(list);
+            });
+
+        } else {
+            res.status(400).send('Company not found')
         }
 
 
     })
 
-    //  Query company information
-    CompanyPreference.find({})
-    .sort({'createdAt' : -1 })
-    .populate(['user', 'preferences'])
-    .exec(function(err, list) {
-        if(err){
-            console.log(err);
-            res.status(400).send('failed to receive company preferences');
-            return;
-        }
-
-        if(!list) {
-            res.status(200).send('preferences were not set before');
-            return;
-               
-        }
-
-        // start of grouping
-
-        let _company_preferences = list;
-        if(!_company_preferences){
-            return;
-        }
-
-        // add order ID for companies
-        _.forEach(_company_preferences, function(o){
-            _.forEach(o.preferences, function(c, i){
-                c.preferenceOrder = i;
-            })
-        })
-
-        let _preferencesByCompany = {};
-
-        _.forEach(_company_preferences, function(o){    // preferences with o.user(with preference order) and o.companies
-
-            _.forEach(o.preferences, function(c){  // c - company
-
-                // each company
-                let _user = Object.create(o.user);
-                _user.preferenceOrder = c.preferenceOrder;
-
-                if(_preferencesByCompany[c._id]){
-                    _preferencesByCompany[c._id].user.push(_user);
-                } else {
-                    _preferencesByCompany[c._id] = {
-                        company: c,
-                        user: [_user]
-                    }
-                }
-            });
-
-        });
-
-        _.forEach(_preferencesByCompany, function(o){
-            // console.log('o', o);
-            o.user = _.sortBy(o.user, function(u){
-                return u.preferenceOrder;
-            })
-        })
-
-        // end of grouping
-
-        res.status(200).send(_preferencesByCompany[_company_id]);
-    });
 });
 
 

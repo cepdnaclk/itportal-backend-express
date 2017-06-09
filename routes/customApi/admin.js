@@ -13,7 +13,7 @@ router.get('/admin/companyPreferences', isAdmin, function(req, res){
 
     CompanyPreference.find({})
     .sort({'createdAt' : -1 })
-    .populate(['user', 'preferences'])
+    .populate(['user', 'organization'])
     .exec(function(err, list) {
         if(err){
             console.log(err);
@@ -51,6 +51,27 @@ router.get('/admin/companyPreferences/:user', isAdmin, function(req, res){
         // console.log( 'list', list );
         res.status(200).send(list);
     });
+});
+router.post('/admin/companyPreferences/set', isAdmin, function(req, res){
+    
+    let _preferences = req.body.data;
+
+    let _error_occurred = false;
+
+    _.forEach(_preferences, function(o){
+        CompanyPreference.update({user:o.user, organization: o.organization}, o, function(err, list){
+            if(err){
+                _error_occurred = true;
+                res.status(400).send('failed saving preferences');
+                return;
+            }
+        });
+    });
+
+    if(!_error_occurred){
+        res.status(200).send();
+        return;
+    }
 });
 
 router.get('/admin/logs', isAdmin, function(req, res){

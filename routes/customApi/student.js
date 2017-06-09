@@ -16,18 +16,29 @@ router.post('/student/companyPreferences', isStudent,function(req, res){
     let _user = req.body.user;
     let _preferences = req.body.preferences;
 
+    let _error_occured = false;
 
-    CompanyPreference.findOneAndUpdate({user: _user}, {preferences: _preferences }, {upsert: true} , function (err) {
-        if (err){
-            console.log(err);
-            res.status(400).send('failed');
-        } else {
-            console.log('[STUDENT] Student preference created')
-            let logging = new Logging({type: 'student_companyPreference_updated', user: _user});
-            logging.save();
-            res.status(200).send('success');
-        }
+    _.forEach(_preferences, function(o, i){ // preference and index
+
+        CompanyPreference.findOneAndUpdate({user: _user, organization: o}, {user: _user, organization: o, preference: i}, {upsert: true} , function (err) {
+            if (err){
+                _error_occured = true;
+                console.log(err);
+                res.status(400).send('failed');
+                return;
+            } else {
+                console.log('[STUDENT] Student preference created')
+                let logging = new Logging({type: 'student_companyPreference_updated', user: _user});
+                logging.save();
+            }
+        });
+        
     });
+
+    if(!_error_occured){
+        res.status(200).send('success');
+        return
+    }
 });
 router.post('/student/projects', isStudent,function(req, res){
     let _user = req.body.user;
