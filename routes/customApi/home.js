@@ -1,6 +1,7 @@
 const Students = require('../../models/student');
 const Organizations = require('../../models/organization');
 const OrganizationRep = require('../../models/organizationRep');
+const Offers = require('../../models/interviews/offers');
 
 const DateContent = require('../../models/misc/dateContent');
 const TextContent = require('../../models/misc/textContent');
@@ -32,14 +33,17 @@ router.get('/home/getData', function(req, res){
 
     let _training_start_date = null;
     let _home_content = null;
+    let _home_footer_content = null;
 
     let _eventEmitter = new EventEmitter();
 
     let _items = {
         students: false,
         organizations: false,
+        students_selected_count: false,
         training_start_date: false,
         home_content: false,
+        home_footer_content: false,
     }
 
     _eventEmitter.on('done', function(item){
@@ -59,6 +63,7 @@ router.get('/home/getData', function(req, res){
                 content: {
                     training_start_date: (_training_start_date ? _training_start_date.value : null),
                     home_content: (_home_content ? _home_content.value : null),
+                    home_footer_content: (_home_footer_content ? _home_footer_content.value : null),
                 },
                 count: {
                     students: _students_count,
@@ -84,6 +89,13 @@ router.get('/home/getData', function(req, res){
         }
         _eventEmitter.emit('done', 'organizations');
     })
+
+    Offers.count({accepted: true}, function( err, count){
+        if(count){
+            _students_selected_count = count;
+        }
+        _eventEmitter.emit('done', 'students_selected_count');
+    })
     
     DateContent.findOne({label: 'training_start_date'}, function( err, date){
         if(date){
@@ -97,6 +109,12 @@ router.get('/home/getData', function(req, res){
             _home_content = content;
         }
         _eventEmitter.emit('done', 'home_content');
+    })
+    TextContent.findOne({label: 'home_footer_content'}, function( err, content){
+        if(content){
+            _home_footer_content = content;
+        }
+        _eventEmitter.emit('done', 'home_footer_content');
     })
     
 });

@@ -35,6 +35,7 @@ module.exports = function(){
 				TextContent.insertMany([
 					{label: 'getting_started', value: '<h3>Help Topics</h3><p>Content not set yet</p>'},
 					{label: 'home_content', value: '<h3>Welcome!</h3><p>Content not set yet</p>'},
+					{label: 'home_footer_introduction', value: '<h3>Industrial Training Portal</h3><p>Content not set yet</p>'},
 				]);
 
 				DateContent.insertMany([
