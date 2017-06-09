@@ -2,10 +2,14 @@ const Students = require('../../models/student');
 const Organizations = require('../../models/organization');
 const OrganizationRep = require('../../models/organizationRep');
 
-const TextContent = require('../../models/misc/textContent')
+const DateContent = require('../../models/misc/dateContent');
+const TextContent = require('../../models/misc/textContent');
+
 const _ = require('lodash');
 
 const GetGPA = require('../../controllers/getResults');
+
+const EventEmitter = require('events');
 
 function api(router){
 
@@ -20,27 +24,80 @@ function api(router){
 
 */
 
-router.get('/home/getCounts', function(req, res){
+router.get('/home/getData', function(req, res){
 
     let _students_count = 0;
     let _companies_count = 0;
     let _students_selected_count = 0;
 
-    Students.count({}, function( err, count){
-        _students_count = count;
+    let _training_start_date = null;
+    let _home_content = null;
 
-        Organizations.count({}, function( err, count){
-            _companies_count = count;
+    let _eventEmitter = new EventEmitter();
+
+    let _items = {
+        students: false,
+        organizations: false,
+        training_start_date: false,
+        home_content: false,
+    }
+
+    _eventEmitter.on('done', function(item){
+        _items[item] = true;
+
+        let _finished = true;
+
+        _.forEach(_items, function(o,i){
+            if(!o) { // if at least is one is not finished
+                _finished = false;
+            }
+        })
+
+        if(_finished){
 
             res.status(200).send({
-                students: _students_count,
-                companies: _companies_count,
-                students_selected: _students_selected_count,
-            })
+                content: {
+                    training_start_date: (_training_start_date ? _training_start_date.value : null),
+                    home_content: (_home_content ? _home_content.value : null),
+                },
+                count: {
+                    students: _students_count,
+                    companies: _companies_count,
+                    students_selected: _students_selected_count,
+                }
+            });
 
-        })
+        }
+    });
+
+    Students.count({}, function( err, count){
+        if(count){
+            _students_count = count;
+        }
+        _eventEmitter.emit('done', 'students');
     })
 
+
+    Organizations.count({}, function( err, count){
+        if(count){
+            _companies_count = count;
+        }
+        _eventEmitter.emit('done', 'organizations');
+    })
+    
+    DateContent.findOne({label: 'training_start_date'}, function( err, date){
+        if(date){
+            _training_start_date = date;
+        }
+        _eventEmitter.emit('done', 'training_start_date');
+    })
+
+    TextContent.findOne({label: 'home_content'}, function( err, content){
+        if(content){
+            _home_content = content;
+        }
+        _eventEmitter.emit('done', 'home_content');
+    })
     
 });
 router.get('/home/gettingStarted', function(req, res){
