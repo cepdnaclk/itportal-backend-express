@@ -14,11 +14,12 @@ function api(router){
 
 router.post('/student/companyPreferences', isStudent,function(req, res){
     let _user = req.body.user;
-    let _preferences = req.body.preferences;
+    let _organizations = req.body.organizations;
+    let _missed_organizations = req.body.missed_organizations;
 
     let _error_occured = false;
 
-    _.forEach(_preferences, function(o, i){ // preference and index
+    _.forEach(_organizations, function(o, i){ // preference and index
 
         CompanyPreference.findOneAndUpdate({user: _user, organization: o}, {user: _user, organization: o, preference: i}, {upsert: true} , function (err) {
             if (err){
@@ -30,8 +31,23 @@ router.post('/student/companyPreferences', isStudent,function(req, res){
                 console.log('[STUDENT] Student preference created')
                 let logging = new Logging({type: 'student_companyPreference_updated', user: _user});
                 logging.save();
+
+
+                CompanyPreference.remove({user: _user, organization: {'$in': _missed_organizations}}, function (err) {
+                    if (err){
+                        _error_occured = true;
+                        console.log(err);
+                        res.status(400).send('failed');
+                        return;
+                    } else {
+                        console.log('[STUDENT] Extra Student preference removed')
+                        let logging = new Logging({type: 'student_companyPreference_updated', user: _user});
+                        logging.save();
+                    }
+                });
             }
         });
+
         
     });
 
@@ -67,9 +83,9 @@ router.post('/student/projects', isStudent,function(req, res){
 router.get('/student/companyPreferences/:user', isStudent,function(req, res){
     let _user = req.params.user;
     console.log('user', _user)
-    CompanyPreference.findOne({user:_user})
+    CompanyPreference.find({user:_user})
     .sort({'createdAt' : -1 })
-    .populate('preferences')
+    .populate(['user','organization'])
     .exec(function(err, list) {
         if(err){
             console.log(err);
@@ -78,7 +94,7 @@ router.get('/student/companyPreferences/:user', isStudent,function(req, res){
         }
 
         if(!list) {
-            res.status(200).send('preferences were not set before');
+            res.status(200).send([]);
             return;
                
         }
@@ -88,7 +104,7 @@ router.get('/student/companyPreferences/:user', isStudent,function(req, res){
 });
 router.get('/student/interviews/all', isStudent, function(req, res){
     let _student_id = req.user._id;
-    console.log('student_id', _student_id);
+    console.log('student user_id', _student_id);
 
     Interview.find({student:new ObjectId(_student_id)})
     .populate(['company'])
