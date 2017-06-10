@@ -10,6 +10,7 @@ var TaskUserSchema = mongoose.Schema({
 
     create_account: {type:Boolean, default: true},
     confirm_email: {type:Boolean, default: false},
+    changed_password: {type:Boolean, default: true},
 
     add_intro: {type:Boolean, default: false},
     add_profilepic: {type:Boolean, default: false},
@@ -20,6 +21,7 @@ var TaskUserSchema = mongoose.Schema({
     add_link_stackoverflow: {type:Boolean, default: false},
     add_link_personal: {type:Boolean, default: false},
     add_link_facebook: {type:Boolean, default: false},
+
 }, {
     timestamps: true
 });

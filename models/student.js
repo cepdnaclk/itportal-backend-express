@@ -4,6 +4,7 @@ var bcrypt = require('bcrypt-nodejs');
 var ObjectId = mongoose.Types.ObjectId;
 var _ = require('lodash');
 
+const TaskStudent = require('../models/logging/task_student');
 
 // define the schema for our Student model
 var StudentSchema = mongoose.Schema({
@@ -42,6 +43,31 @@ StudentSchema.statics.addInterest = function(_user_id, _interest_id) {
     })
 };
 
+StudentSchema.post('save', function(doc){
+    // console.log('[POST-SAVE]', doc);
 
+    if(!doc){
+        console.log('[USER][POST-SAVE-MODEL] student result not saved')
+        return;
+    }
+    console.log('[USER][POST-SAVE-MODEL] student result saved')
+
+    let _data = {
+        student: new ObjectId(doc._id),
+
+        add_registrationNumber: ((doc.registrationNumber != 'E/XX/XXX') ? true : false),
+        add_projects: (doc.projects.length>0? true : false),
+        add_skills: (doc.skills.length>0? true : false),
+        add_competitions: (doc.competitions.length>0 ? true : false),
+        add_awards: (doc.awards.length>0 ? true : false),
+        add_cocurriculars: (doc.cocurriculars.length>0 ? true : false),
+        add_extracurriculars: (doc.extracurriculars.length>0 ? true : false),
+        add_interests: (doc.interests.length>0 ? true : false),
+    };
+
+    TaskStudent.findOneAndUpdate({student: new ObjectId(doc._id)}, _data, {upsert:true}, function(err, result){
+        if (err) console.error(err);
+    });
+})
 // create the model for Students and expose it to our app
 module.exports = mongoose.model('Student', StudentSchema);

@@ -6,9 +6,10 @@ var _ = require('lodash');
 // define the schema for our TaskStudent model
 var TaskStudentSchema = mongoose.Schema({
 
-    user: { type: Schema.Types.ObjectId, ref: 'Student' },
+    student: { type: Schema.Types.ObjectId, ref: 'Student' },
 
-    add_registraionNumber: {type:Boolean, default: false},
+    add_registrationNumber: {type:Boolean, default: false},
+    
     add_projects: {type:Boolean, default: false},
     add_skills: {type:Boolean, default: false},
     add_competitions: {type:Boolean, default: false},
@@ -16,17 +17,13 @@ var TaskStudentSchema = mongoose.Schema({
     add_cocurriculars: {type:Boolean, default: false},
     add_extracurriculars: {type:Boolean, default: false},
     add_interests: {type:Boolean, default: false},
-
-    changed_password: {type:Boolean, default: true},
-    
+   
     view_company: {type:Boolean, default: false},
     view_company_rep: {type:Boolean, default: false},
 
     set_company_preference: {type:Boolean, default: false},
     set_interview_state: {type:Boolean, default: false},
     set_offer_state: {type:Boolean, default: false},
-
-
 
 }, {
     timestamps: true

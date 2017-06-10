@@ -14,6 +14,7 @@ const interestModel = require('../models/interest');
 const skillModel = require('../models/skill');
 
 const TaskUser = require('../models/logging/task_user');
+const TaskStudent = require('../models/logging/task_student');
 const ObjectId = require('mongoose').Types.ObjectId; 
 
 const LoggingActivity = require('../models/logging/activity');
@@ -216,7 +217,38 @@ router.put('/photo/organization', upload.single('photo'), function(req, res, nex
 
 */
 
-restify.serve(router, studentModel)
+restify.serve(router, studentModel, {
+
+    postUpdate: function (req, res, next) {
+        const result = req.erm.result         // unfiltered document or object
+        const statusCode = req.erm.statusCode // 200
+
+        if(!result){
+            console.log('[USER][POST-SAVE] student result not saved')
+            next();
+        }
+        console.log('[USER][POST-SAVE] student result saved')
+
+        let _data = {
+            student: new ObjectId(result._id),
+
+            add_registrationNumber: ((result.registrationNumber != 'E/XX/XXX') ? true : false),
+            add_projects: (result.projects.length>0? true : false),
+            add_skills: (result.skills.length>0? true : false),
+            add_competitions: (result.competitions.length>0 ? true : false),
+            add_awards: (result.awards.length>0 ? true : false),
+            add_cocurriculars: (result.cocurriculars.length>0 ? true : false),
+            add_extracurriculars: (result.extracurriculars.length>0 ? true : false),
+            add_interests: (result.interests.length>0 ? true : false),
+        };
+
+        TaskStudent.findOneAndUpdate({student: new ObjectId(result._id)}, _data, {upsert:true}, function(err, result){
+            if (err) console.error(err);
+            next()
+        });
+    }
+});
+
 restify.serve(router, userModel, {
     postUpdate: function (req, res, next) {
         const result = req.erm.result         // unfiltered document or object
@@ -243,7 +275,7 @@ restify.serve(router, userModel, {
         }
 
         console.log(_data)
-        
+
         TaskUser.findOneAndUpdate({user: new ObjectId(result._id)}, _data, {upsert:true}, function(err, result){
             if (err) console.error(err);
             next()

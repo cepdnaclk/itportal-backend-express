@@ -6,15 +6,12 @@ var _ = require('lodash');
 // define the schema for our TaskOrganizationRep model
 var TaskOrganizationRepSchema = mongoose.Schema({
 
-    user: { type: Schema.Types.ObjectId, ref: 'OrganizationRep' },
+    organizationRep: { type: Schema.Types.ObjectId, ref: 'OrganizationRep' },
 
-    add_registraionNumber: {type:Boolean, default: false},
     add_projects: {type:Boolean, default: false},
     add_skills: {type:Boolean, default: false},
     add_awards: {type:Boolean, default: false},
     add_interests: {type:Boolean, default: false},
-
-    changed_password: {type:Boolean, default: true},
 
     join_company: {type:Boolean, default: false},
     view_students: {type:Boolean, default: false},

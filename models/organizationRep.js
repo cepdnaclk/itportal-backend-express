@@ -4,6 +4,8 @@ var ObjectId = mongoose.Types.ObjectId;
 var bcrypt = require('bcrypt-nodejs');
 var _ = require('lodash');
 
+const TaskRep = require('../models/logging/task_organizationRep');
+
 
 // define the schema for our OrganizationRep model
 var OrganizationRepSchema = mongoose.Schema({
@@ -34,5 +36,28 @@ OrganizationRepSchema.statics.addInterest = function(_user_id, _interest_id) {
         }
     })
 };
+
+OrganizationRepSchema.post('save', function(doc){
+    // console.log('[POST-SAVE]', doc);
+
+    if(!doc){
+        console.log('[USER][POST-SAVE-MODEL] organizationRep result not saved')
+        return;
+    }
+    console.log('[USER][POST-SAVE-MODEL] organizationRep result saved')
+
+    let _data = {
+        organizationRep: new ObjectId(doc._id),
+
+        add_projects: (doc.projects.length>0? true : false),
+        add_skills: (doc.skills.length>0? true : false),
+        add_awards: (doc.awards.length>0 ? true : false),
+        add_interests: (doc.interests.length>0 ? true : false),
+    };
+
+    TaskRep.findOneAndUpdate({organizationRep: new ObjectId(doc._id)}, _data, {upsert:true}, function(err, result){
+        if (err) console.error(err);
+    });
+})
 // create the model for OrganizationReps and expose it to our app
 module.exports = mongoose.model('OrganizationRep', OrganizationRepSchema);
