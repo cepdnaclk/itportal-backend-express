@@ -15,6 +15,8 @@ const skillModel = require('../models/skill');
 
 const TaskUser = require('../models/logging/task_user');
 const TaskStudent = require('../models/logging/task_student');
+const TaskRep = require('../models/logging/task_organizationRep');
+
 const ObjectId = require('mongoose').Types.ObjectId; 
 
 const LoggingActivity = require('../models/logging/activity');
@@ -302,6 +304,20 @@ router.post('/organization/joinCompany', function(req, res){
     logging_auth.save();
 
     let _user_new_organization_id = req.body.id;
+
+
+    organizationRepModel.findOne({email: req.user.email}, function(err, rep){
+        if(err){
+            console.error('couldn\'t find organizationRep ID to add task');
+        } else {
+            if(rep){
+
+                TaskRep.findOneAndUpdate({organizationRep: new ObjectId(rep._id)}, {join_company: true}, {upsert:true}, function(err, result){
+                    if (err) console.error(err);
+                });
+            }
+        }
+    })
 
     organizationModel.findOne({ organizationRepEmails: { "$in" : [req.user.email]} }, function (err, organization) {
 

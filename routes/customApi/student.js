@@ -7,6 +7,7 @@ const Project = require('../../models/project');
 
 const GetGPA = require('../../controllers/getResults');
 
+const TaskStudent = require('../../models/logging/task_student');
 const ObjectId = require('mongoose').Types.ObjectId; 
 const _ = require('lodash');
 
@@ -18,6 +19,21 @@ router.post('/student/companyPreferences', isStudent,function(req, res){
     let _missed_organizations = req.body.missed_organizations;
 
     let _error_occured = false;
+
+
+    Student.findOne({email: req.user.email}, function(err, _student){
+        if(err){
+            console.error('couldn\'t find student ID to add task');
+        } else {
+            if(_student){
+
+                TaskStudent.findOneAndUpdate({student: new ObjectId(_student._id)}, {set_company_preference: true}, {upsert:true}, function(err, result){
+                    if (err) console.error(err);
+                });
+            }
+        }
+    })
+
 
     _.forEach(_organizations, function(o, i){ // preference and index
 
@@ -153,6 +169,20 @@ router.post('/student/offers/accept', isStudent, function(req, res){
     let _offer_id = req.body.offer_id;
 
     console.log('student_id', _student_id);
+    
+    Student.findOne({email: req.user.email}, function(err, _student){
+        if(err){
+            console.error('couldn\'t find student ID to add task');
+        } else {
+            if(_student){
+
+                TaskStudent.findOneAndUpdate({student: new ObjectId(_student._id)}, {set_offer_state_accept: true}, {upsert:true}, function(err, result){
+                    if (err) console.error(err);
+                });
+            }
+        }
+    })
+
 
     Offer.findById(_offer_id)
     .exec(function(err, offer) {
@@ -193,6 +223,19 @@ router.post('/student/offers/reject', isStudent, function(req, res){
     let _offer_id = req.body.offer_id;
 
     console.log('student_id', _student_id);
+
+    Student.findOne({email: req.user.email}, function(err, _student){
+        if(err){
+            console.error('couldn\'t find student ID to add task');
+        } else {
+            if(_student){
+
+                TaskStudent.findOneAndUpdate({student: new ObjectId(_student._id)}, {set_offer_state_reject: true}, {upsert:true}, function(err, result){
+                    if (err) console.error(err);
+                });
+            }
+        }
+    })
 
     Offer.findById(_offer_id)
     .exec(function(err, offer) {

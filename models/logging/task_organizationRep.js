@@ -19,7 +19,8 @@ var TaskOrganizationRepSchema = mongoose.Schema({
 
     interview_view: {type:Boolean, default: false},
     interview_add: {type:Boolean, default: false},
-    interview_accept_or_reject: {type:Boolean, default: false},
+    interview_accept: {type:Boolean, default: false},
+    interview_reject: {type:Boolean, default: false},
     
 }, {
     timestamps: true

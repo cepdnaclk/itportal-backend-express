@@ -7,6 +7,8 @@ const Student = require('../../models/student');
 const Logging = require('../../models/logging/activity');
 const Project = require('../../models/project');
 
+const TaskRep = require('../../models/logging/task_organizationRep');
+
 const _ = require('lodash');
 const ObjectId = require('mongoose').Types.ObjectId; 
 
@@ -93,6 +95,19 @@ router.post('/company/interview/new', function(req, res){
 
     let _company_id;
 
+    OrganizationRep.findOne({email: _companyRep_email}, function(err, rep){
+        if(err){
+            console.error('couldn\'t find organizationRep ID to add task');
+        } else {
+            if(rep){
+
+                TaskRep.findOneAndUpdate({organizationRep: new ObjectId(rep._id)}, {interview_add: true}, {upsert:true}, function(err, result){
+                    if (err) console.error(err);
+                });
+            }
+        }
+    })
+
     // Get the user's company id
     Organization.findOne({ organizationRepEmails: { "$in" : [_companyRep_email]}} , function(err, company){
         // console.log(err, company)
@@ -139,6 +154,21 @@ router.post('/company/offer/new', function(req, res){
     let _student_id = req.body.studentId;
 
     let _company_id;
+
+
+    OrganizationRep.findOne({email: req.user.email}, function(err, rep){
+        if(err){
+            console.error('couldn\'t find organizationRep ID to add task');
+        } else {
+            if(rep){
+
+                TaskRep.findOneAndUpdate({organizationRep: new ObjectId(rep._id)}, {interview_accept: true}, {upsert:true}, function(err, result){
+                    if (err) console.error(err);
+                });
+            }
+        }
+    })
+
 
     // Get the user's company id
     Organization.findOne({ organizationRepEmails: { "$in" : [_companyRep_email]}} , function(err, company){

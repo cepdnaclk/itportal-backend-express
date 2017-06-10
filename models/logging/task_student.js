@@ -23,7 +23,8 @@ var TaskStudentSchema = mongoose.Schema({
 
     set_company_preference: {type:Boolean, default: false},
     set_interview_state: {type:Boolean, default: false},
-    set_offer_state: {type:Boolean, default: false},
+    set_offer_state_accept: {type:Boolean, default: false},
+    set_offer_state_reject: {type:Boolean, default: false},
 
 }, {
     timestamps: true
