@@ -4,7 +4,12 @@ const TextContent = require('../../models/misc/textContent');
 const DateContent = require('../../models/misc/dateContent');
 const BooleanContent = require('../../models/misc/booleanContent');
 
+const TaskUser = require('../../models/logging/task_user');
+const TaskStudent = require('../../models/logging/task_student');
+const TaskOrganizationRep = require('../../models/logging/task_organizationRep');
+
 const _ = require('lodash');
+const EventEmitter = require('events');
 
 function api(router){
 
@@ -211,6 +216,70 @@ router.get('/admin/content/date', isAdmin, function(req, res){
         }
         res.status(400).send();
     })
+
+});
+
+router.get('/admin/userEvents', isAdmin, function(req, res){
+
+    let _taskUser_data =  {};
+    let _taskStudent_data =  {};
+    let _taskOrganizationRep_data =  {};
+
+    let _eventEmitter = new EventEmitter();
+
+    let _items = {
+        _taskUser_data: false,
+        _taskStudent_data: false,
+        _taskOrganizationRep_data: false,
+    }
+
+    _eventEmitter.on('done', function(item){
+        _items[item] = true;
+
+        let _finished = true;
+
+        _.forEach(_items, function(o,i){
+            if(!o) { // if at least is one is not finished
+                _finished = false;
+            }
+        })
+
+        if(_finished){
+
+            res.status(200).send({
+                taskUser_data: _taskUser_data,
+                taskStudent_data: _taskStudent_data,
+                taskOrganizationRep_data: _taskOrganizationRep_data,
+            });
+
+        }
+    });
+
+    TaskUser.find({})
+    .populate('user')
+    .exec(function( err, list){
+        if(list){
+            _taskUser_data = list;
+        }
+        _eventEmitter.emit('done', '_taskUser_data');
+    })
+    TaskStudent.find({})
+    .populate('student')
+    .exec(function( err, list){
+        if(list){
+            _taskStudent_data = list;
+        }
+        _eventEmitter.emit('done', '_taskStudent_data');
+    })
+    TaskOrganizationRep.find({})
+    .populate('organizationRep')
+    .exec(function( err, list){
+        if(list){
+            _taskOrganizationRep_data = list;
+        }
+        _eventEmitter.emit('done', '_taskOrganizationRep_data');
+    })
+
 
 });
 
