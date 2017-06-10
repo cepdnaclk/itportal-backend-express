@@ -4,6 +4,10 @@ const OrganizationRep = require('../models/organizationRep');
 const mailer = require('../controllers/email');
 const config = require('../config');
 const shortid = require('shortid');
+
+const TaskUser = require('../models/logging/task_user')
+
+const ObjectId = require('mongoose').Types.ObjectId; 
 const _ = require('lodash');
 
 module.exports = {
@@ -52,6 +56,11 @@ module.exports = {
                         req.user = newuser;
                         console.log(newuser);
                         mailer.sendMail_confirm_account(newuser, config.frontEndUrl + 'dashboard/confirm/' + _emailConfirmation_shortid);
+
+                        let taskUser = new TaskUser();
+                        taskUser.user = newuser._id;
+                        taskUser.save();
+
                         next();
 
 
@@ -88,6 +97,11 @@ module.exports = {
                             req.user = newuser;
                             mailer.sendMail_confirm_account_done(newuser);
                             req.flashMessage = "Your account has been confirmed"
+
+                            TaskUser.findOneAndUpdate({user: new ObjectId(newuser._id)}, {user: new ObjectId(newuser._id), confirm_email: true}, {upsert:true}, function(err, doc){
+                                if (err) console.error(err);
+                            });
+
                             next();
 
                         } else {
@@ -132,6 +146,11 @@ module.exports = {
                     if (!err) {
                         req.user = newuser;
                         mailer.sendMail_confirm_account(newuser, config.frontEndUrl + 'dashboard/confirm/' + _emailConfirmation_shortid);
+
+                        TaskUser.findOneAndUpdate({user: new ObjectId(newuser._id)}, {user: new ObjectId(newuser._id), confirm_email: false}, {upsert:true}, function(err, doc){
+                            if (err) console.error(err);
+                        });
+
                         next();
 
                     } else {

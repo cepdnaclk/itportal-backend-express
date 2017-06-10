@@ -19,7 +19,7 @@ var UserSchema = mongoose.Schema({
     title: String,
     tagline: String,
 
-    phone: { type: 'string', defaultsTo: '000-000-0000' },
+    phone: { type: 'string'},
     birthDay: { type: 'date' },
 
     linksFacebook: {type: 'string'},

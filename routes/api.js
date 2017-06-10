@@ -13,6 +13,9 @@ const extracurricularModel = require('../models/extracurricular');
 const interestModel = require('../models/interest');
 const skillModel = require('../models/skill');
 
+const TaskUser = require('../models/logging/task_user');
+const ObjectId = require('mongoose').Types.ObjectId; 
+
 const LoggingActivity = require('../models/logging/activity');
 
 const restify = require('express-restify-mongoose');
@@ -214,7 +217,39 @@ router.put('/photo/organization', upload.single('photo'), function(req, res, nex
 */
 
 restify.serve(router, studentModel)
-restify.serve(router, userModel)
+restify.serve(router, userModel, {
+    postUpdate: function (req, res, next) {
+        const result = req.erm.result         // unfiltered document or object
+        const statusCode = req.erm.statusCode // 200
+
+        if(!result){
+            console.log('[USER][POST-SAVE] user result not saved')
+            next();
+        }
+        console.log('[USER][POST-SAVE] user result saved')
+
+        let _data = {
+            user: new ObjectId(result._id),
+
+            add_intro: ((result.title && result.tagline) ? true : false),
+            add_profilepic: (result.photo? true : false),
+            add_phone: (result.phone? true : false),
+
+            add_link_linkedIn: (result.linksLinkedin? true : false),
+            add_link_github: (result.linksGithub? true : false),
+            add_link_stackoverflow: (result.linksStackoverflow? true : false),
+            add_link_personal: (result.linksPortfolio? true : false),
+            add_link_facebook: (result.linksFacebook? true : false),
+        }
+
+        console.log(_data)
+        
+        TaskUser.findOneAndUpdate({user: new ObjectId(result._id)}, _data, {upsert:true}, function(err, result){
+            if (err) console.error(err);
+            next()
+        });
+    }
+})
 restify.serve(router, projectModel)
 restify.serve(router, organizationModel)
 restify.serve(router, organizationRepModel)
