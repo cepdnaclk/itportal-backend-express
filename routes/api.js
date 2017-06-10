@@ -61,6 +61,7 @@ router.use(isLoggedIn);
 const studentApi = require('./customApi/student')(router);
 const adminAPI = require('./customApi/admin')(router);
 const companyAPI = require('./customApi/company')(router);
+const profileAPI = require('./customApi/profile')(router);
 
 /* show welcome message */
 router.get('/', function(req, res, next) {
