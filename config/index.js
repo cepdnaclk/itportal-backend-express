@@ -3,7 +3,8 @@ module.exports = {
 
     // database locations
     'url_dev': 'mongodb://127.0.0.1/itportal_dev_db',
-    'url': 'mongodb://ishan-admin:ishan-admin-k42wxbv7@ds161169.mlab.com:61169/heroku_k42wxbv7 ## check',
+    'url': 'mongodb://127.0.0.1/itportal_dev_db',
+    // 'url': 'mongodb://ishan-admin:ishan-admin-k42wxbv7@ds161169.mlab.com:61169/heroku_k42wxbv7 ## check',
 
     'location_results': 'results/',
 
@@ -16,7 +17,7 @@ module.exports = {
     'defaultAdminPassword': 'password',
 
 	// front end base url
-    'frontEndUrl': 'http://localhost:4000/',
+    'frontEndUrl': 'http://itportal.ce.pdn.ac.lk/',
 
 
 };
