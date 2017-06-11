@@ -86,6 +86,9 @@ app.use('/auth', auth);
 app.use('/api', api);
 app.use('/test', test);
 
+app.get('/*', function(req, res){
+  res.sendFile(__dirname + '/index.html');
+});
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
