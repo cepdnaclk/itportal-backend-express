@@ -7,10 +7,13 @@ const Project = require('../../models/project');
 
 const GetGPA = require('../../controllers/getResults');
 
+const TaskUser = require('../../models/logging/task_user');
 const TaskStudent = require('../../models/logging/task_student');
+
 const ProfileViews = require('../../models/logging/profile_views');
 const ObjectId = require('mongoose').Types.ObjectId; 
 const _ = require('lodash');
+const EventEmitter = require('events');
 
 function api(router){
 
@@ -284,6 +287,42 @@ router.get('/student/getResults', function(req, res){
 });
 
 router.get('/student/summary', function(req, res){
+
+    let _profile_count = 0;
+    let _tasks_list_user = {};
+    let _tasks_list_student = {};
+
+    let _eventEmitter = new EventEmitter();
+
+    let _items = {
+        _profile_count: false,
+        _tasks_list_user: false,
+        _tasks_list_student: false,
+    }
+
+
+    _eventEmitter.on('done', function(item){
+        _items[item] = true;
+
+        let _finished = true;
+
+        _.forEach(_items, function(o,i){
+            if(!o) { // if at least is one is not finished
+                _finished = false;
+            }
+        })
+
+        if(_finished){
+
+            res.status(200).send({
+                profile_count: _profile_count,
+                tasks_list_user: _tasks_list_user,
+                tasks_list_student: _tasks_list_student,
+            });
+            return;
+        }
+    });
+
     ProfileViews.count({viewed_profile: new ObjectId(req.user._id)})
     .exec(function(err,count){
         if(err){
@@ -291,9 +330,43 @@ router.get('/student/summary', function(req, res){
             return;
         }
         if(count){
-            res.send({profile_views:count})
+            _profile_count = count;
+        }
+        _eventEmitter.emit('done', '_profile_count');
+
+    })
+
+    TaskUser.findOne({user: new ObjectId(req.user._id)})
+    .exec(function(err,_task_user){
+        if(_task_user){
+            _tasks_list_user = _task_user;
+        }
+
+        _eventEmitter.emit('done', '_tasks_list_user');
+    });
+
+    Student.findOne({email: req.user.email}, function(err, student){
+        if(err){
+
+            _eventEmitter.emit('done', '_tasks_list_student');
+            return;
+        }
+        if(student){
+            
+            TaskStudent.findOne({student: new ObjectId(student._id)})
+            .exec(function(err, _task_student){
+                if( _task_student){
+                    _tasks_list_student =  _task_student;
+                }
+
+                _eventEmitter.emit('done', '_tasks_list_student');
+            });
+
+        } else {
+            _eventEmitter.emit('done', '_tasks_list_student');
         }
     })
+
 });
 
 router.post('/student/updateRegNumber', function(req, res){

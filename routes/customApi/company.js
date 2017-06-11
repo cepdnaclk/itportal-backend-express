@@ -7,6 +7,7 @@ const Student = require('../../models/student');
 const Logging = require('../../models/logging/activity');
 const Project = require('../../models/project');
 
+const TaskUser = require('../../models/logging/task_user');
 const TaskRep = require('../../models/logging/task_organizationRep');
 
 const ProfileViews = require('../../models/logging/profile_views');
@@ -240,12 +241,16 @@ router.get('/company/get/student/:userId', function(req, res){
 router.get('/company/summary', function(req, res){
     let _profile_count = 0;
     let _company_profile_count = 0;
+    let _tasks_list_user = {};
+    let _tasks_list_rep = {};
 
     let _eventEmitter = new EventEmitter();
 
     let _items = {
         _profile_count: false,
         _company_profile_count: false,
+        _tasks_list_user: false,
+        _tasks_list_rep: false,
     }
 
     _eventEmitter.on('done', function(item){
@@ -264,8 +269,10 @@ router.get('/company/summary', function(req, res){
             res.status(200).send({
                 profile_views: _profile_count,
                 profile_views_company: _company_profile_count,
+                tasks_list_user: _tasks_list_user,
+                tasks_list_rep: _tasks_list_rep,
             });
-
+            return;
         }
     });
 
@@ -278,14 +285,33 @@ router.get('/company/summary', function(req, res){
         _eventEmitter.emit('done', '_profile_count');
     });
 
+    TaskUser.findOne({user: new ObjectId(req.user._id)})
+    .exec(function(err,_task_user){
+        if(_task_user){
+            _tasks_list_user = _task_user;
+        }
+
+        _eventEmitter.emit('done', '_tasks_list_user');
+    });
+
     OrganizationRep.findOne({email: req.user.email}, function(err, rep){
         if(err){
             _eventEmitter.emit('done', '_company_profile_count');
+            _eventEmitter.emit('done', '_tasks_list_rep');
             return;
         }
 
         if(rep){
             
+            TaskRep.findOne({organizationRep: new ObjectId(rep._id)})
+            .exec(function(err,_task_rep){
+                if(_task_rep){
+                    _tasks_list_rep = _task_rep;
+                }
+
+                _eventEmitter.emit('done', '_tasks_list_rep');
+            });
+
             ProfileViews_company.count({viewed_company: new ObjectId(rep.company)}, function(err, _company_count){
                 if(err){
                     console.log(err);
@@ -295,6 +321,9 @@ router.get('/company/summary', function(req, res){
                 }
                 _eventEmitter.emit('done', '_company_profile_count');
             })
+        } else {
+            _eventEmitter.emit('done', '_tasks_list_rep');
+            _eventEmitter.emit('done', '_company_profile_count');
         }
     })
 });
