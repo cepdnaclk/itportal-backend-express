@@ -67,7 +67,6 @@ router.post('/admin/companyPreferences/set', isAdmin, function(req, res){
         CompanyPreference.update({user:o.user, organization: o.organization}, o, function(err, list){
             if(err){
                 _error_occurred = true;
-                res.status(400).send('failed saving preferences');
                 return;
             }
         });
@@ -76,6 +75,8 @@ router.post('/admin/companyPreferences/set', isAdmin, function(req, res){
     if(!_error_occurred){
         res.status(200).send();
         return;
+    } else {
+        res.status(400).send('failed saving preferences');
     }
 });
 
