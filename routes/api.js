@@ -49,6 +49,7 @@ const Jimp = require('jimp');
 
 
 
+router.use(addReqUserIfLoggedIn);
 const homeAPI = require('./customApi/home')(router);
 
 router.use(isLoggedIn);
@@ -436,6 +437,25 @@ router.post('/interest/addProfile', function(req, res){
 
 })
 
+function addReqUserIfLoggedIn(req, res, next) {
+
+    // console.log(req);
+    if(!req.header('authorization')){
+        next();
+        return;
+    }
+    var token = req.header('authorization').replace('Bearer ', '');
+    // console.log('[token]', token);
+    jwt.verify(token, config.secret, function(err, decoded) {
+        if (!err) {
+            req.user = decoded;
+            next();
+        } else {
+            next();
+        }
+    })
+
+}
 function isLoggedIn(req, res, next) {
 
     // console.log(req);

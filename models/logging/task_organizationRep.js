@@ -14,8 +14,9 @@ var TaskOrganizationRepSchema = mongoose.Schema({
     add_interests: {type:Boolean, default: false},
 
     join_company: {type:Boolean, default: false},
-    view_students: {type:Boolean, default: false},
+    view_student: {type:Boolean, default: false},
     view_company: {type:Boolean, default: false},
+    view_companyRep: {type:Boolean, default: false},
 
     interview_view: {type:Boolean, default: false},
     interview_add: {type:Boolean, default: false},

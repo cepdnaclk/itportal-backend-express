@@ -6,6 +6,9 @@ const Offers = require('../../models/interviews/offers');
 const DateContent = require('../../models/misc/dateContent');
 const TextContent = require('../../models/misc/textContent');
 
+const ProfileViews = require('../../models/logging/profile_views');
+const ProfileViews_companyProfile = require('../../models/logging/profile_views_company');
+
 const _ = require('lodash');
 
 const GetGPA = require('../../controllers/getResults');
@@ -183,6 +186,7 @@ router.get('/profile/student/:id', function(req, res){
 
     let _id = req.params.id;
 
+
     Students.findById(_id)
     .populate([
         'StudentDetails',
@@ -203,6 +207,19 @@ router.get('/profile/student/:id', function(req, res){
         }
         if(student){
             GetGPA.getStudentResults(student.registrationNumber, function(results){
+
+                let _newProfileView = new ProfileViews();
+                if(req.user) {
+                    _newProfileView.viewed_by = req.user._id;
+                }
+                _newProfileView.viewed_profile = student.StudentDetails._id;
+
+                if(!req.user){
+                    _newProfileView.save();
+                } else if(req.user._id != student.StudentDetails._id){
+                    _newProfileView.save();
+                }
+
                 res.status(200).send({'student': student, 'academics': results});
             });
             
@@ -228,6 +245,20 @@ router.get('/profile/organizationRepresentative/:id', function(req, res){
     ])
     .populate({path:'projects', populate: {path: 'skills'}})
     .exec(function( err, organizationRep){
+
+        let _newProfileView = new ProfileViews();
+        if(req.user) {
+            _newProfileView.viewed_by = req.user._id;
+        }
+        _newProfileView.viewed_profile = organizationRep.OrganizationRepDetails._id;
+
+        if(!req.user){
+            _newProfileView.save();
+        } else if(req.user._id != organizationRep.OrganizationRepDetails._id){
+            _newProfileView.save();
+        }
+
+
         res.status(200).send(organizationRep);
     });
 
@@ -240,6 +271,14 @@ router.get('/profile/organization/:id', function(req, res){
 
     Organizations.findById(_id)
     .exec(function( err, organization){
+
+        let _newProfileView = new ProfileViews_companyProfile();
+        if(req.user) {
+            _newProfileView.viewed_by = req.user._id;
+        }
+        _newProfileView.viewed_company = organization._id;
+        _newProfileView.save();
+
         res.status(200).send(organization);
     });
 

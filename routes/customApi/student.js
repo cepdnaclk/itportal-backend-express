@@ -8,6 +8,7 @@ const Project = require('../../models/project');
 const GetGPA = require('../../controllers/getResults');
 
 const TaskStudent = require('../../models/logging/task_student');
+const ProfileViews = require('../../models/logging/profile_views');
 const ObjectId = require('mongoose').Types.ObjectId; 
 const _ = require('lodash');
 
@@ -281,6 +282,20 @@ router.get('/student/getResults', function(req, res){
     })
 
 });
+
+router.get('/student/summary', function(req, res){
+    ProfileViews.count({viewed_profile: new ObjectId(req.user._id)})
+    .exec(function(err,count){
+        if(err){
+            res.status(400).send();
+            return;
+        }
+        if(count){
+            res.send({profile_views:count})
+        }
+    })
+});
+
 router.post('/student/updateRegNumber', function(req, res){
 
     let _reg_num = req.body.reg_num;

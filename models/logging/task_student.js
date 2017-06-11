@@ -18,6 +18,7 @@ var TaskStudentSchema = mongoose.Schema({
     add_extracurriculars: {type:Boolean, default: false},
     add_interests: {type:Boolean, default: false},
    
+    view_student: {type:Boolean, default: false},
     view_company: {type:Boolean, default: false},
     view_company_rep: {type:Boolean, default: false},
 

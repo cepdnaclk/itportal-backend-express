@@ -9,8 +9,12 @@ const Project = require('../../models/project');
 
 const TaskRep = require('../../models/logging/task_organizationRep');
 
+const ProfileViews = require('../../models/logging/profile_views');
+const ProfileViews_company = require('../../models/logging/profile_views_company');
+
 const _ = require('lodash');
 const ObjectId = require('mongoose').Types.ObjectId; 
+const EventEmitter = require('events');
 
 function api(router){
 
@@ -230,6 +234,68 @@ router.get('/company/get/student/:userId', function(req, res){
 
         res.send(400).send('student not found');
 
+    })
+});
+
+router.get('/company/summary', function(req, res){
+    let _profile_count = 0;
+    let _company_profile_count = 0;
+
+    let _eventEmitter = new EventEmitter();
+
+    let _items = {
+        _profile_count: false,
+        _company_profile_count: false,
+    }
+
+    _eventEmitter.on('done', function(item){
+        _items[item] = true;
+
+        let _finished = true;
+
+        _.forEach(_items, function(o,i){
+            if(!o) { // if at least is one is not finished
+                _finished = false;
+            }
+        })
+
+        if(_finished){
+
+            res.status(200).send({
+                profile_views: _profile_count,
+                profile_views_company: _company_profile_count,
+            });
+
+        }
+    });
+
+    ProfileViews.count({viewed_profile: new ObjectId(req.user._id)})
+    .exec(function(err,count){
+        if(count){
+            _profile_count = count;
+        }
+
+        _eventEmitter.emit('done', '_profile_count');
+    });
+
+    OrganizationRep.findOne({email: req.user.email}, function(err, rep){
+        if(err){
+            _eventEmitter.emit('done', '_company_profile_count');
+            return;
+        }
+
+        if(rep){
+            
+            ProfileViews_company.count({viewed_company: new ObjectId(rep.company)}, function(err, _company_count){
+                if(err){
+                    console.log(err);
+                }
+                if(_company_count){
+                    _company_profile_count = _company_count;
+                }
+                _eventEmitter.emit('done', '_company_profile_count');
+            })
+        }
     })
 });
 
