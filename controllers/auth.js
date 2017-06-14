@@ -78,6 +78,73 @@ module.exports = {
         });
 
     },
+    signupLDAP: function(req, res, next) {
+
+        User.findOne({
+            email: req.user.email
+        }, function(err, user) {
+            if (err) {
+                res.status(400).send({
+                    flashMessage: 'Something went wrong in creating your account.'
+                });
+                return;
+            }
+            if (user) {
+                user.name = req.body.name;
+                user.role = req.body.role;
+
+                console.log(user.role);
+
+                if(_.indexOf(user.role, "STUDENT") >= 0){
+                    Student.create({email: user.email, StudentDetails: user._id }, function (err) {
+                        if (err){
+                            console.log(err);
+                        } else {
+                            console.log('[Signup] Student created')
+                        }
+                    });
+                }
+                if(_.indexOf(user.role, "COMPANY") >= 0){
+                    OrganizationRep.create({email: user.email, OrganizationRepDetails: user._id }, function (err) {
+                        if (err){
+                            console.log(err);
+                        } else {
+                            console.log('[Signup] OrganizationRep created')
+                        }
+                    });
+                }
+
+                user.emailConfirmed = false;
+                var _emailConfirmation_shortid = shortid.generate();
+                user.emailConfirmationHash = user.generateConfirmationHash(_emailConfirmation_shortid);
+
+                user.save(function(err, newuser) {
+                    if (!err) {
+                        req.user = newuser;
+                        console.log(newuser);
+                        mailer.sendMail_confirm_account(newuser, config.frontEndUrl + 'dashboard/confirm/' + _emailConfirmation_shortid);
+
+                        let taskUser = new TaskUser();
+                        taskUser.user = newuser._id;
+                        taskUser.save();
+
+                        next();
+
+
+
+                    } else {
+                        console.log(err);
+                        next();
+
+                    }
+                })
+
+            } else {
+                next();
+            }
+        });
+
+    },
     confirm: function(req, res, next) {
 
         User.findOne({

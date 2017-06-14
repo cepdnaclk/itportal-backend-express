@@ -9,7 +9,7 @@ const TaskRep = require('../models/logging/task_organizationRep');
 
 // define the schema for our OrganizationRep model
 var OrganizationRepSchema = mongoose.Schema({
-    email: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
     OrganizationRepDetails: { type: Schema.Types.ObjectId, ref: 'User' },
     skills: [{ type: Schema.Types.ObjectId, ref: 'Skill' }],
     projects: [{ type: Schema.Types.ObjectId, ref: 'Project' }],

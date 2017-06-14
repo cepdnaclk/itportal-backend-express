@@ -43,6 +43,30 @@ router.post('/login', passport.authenticate('local-login'), function(req, res) {
         user: _user
     })
 });
+router.post('/loginLDAP', passport.authenticate('ldap-login'), function(req, res) {
+    let _user = JSON.parse(JSON.stringify(req.user));
+
+    // console.log(_user);
+
+    let logging_auth = new LoggingUserActivity({type: 'auth_login', user: _user._id});
+    logging_auth.save();
+
+    let _token = jwt.sign(_user, config.secret, {
+        expiresIn: '1hr'
+    });
+
+
+
+    delete _user.password;
+    delete _user.emailConfirmationHash;
+
+    res.status(200).send({
+        message: req.flashMessage || 'Success',
+        token: _token,
+        user: _user
+    })
+});
+
 router.post('/refreshtoken', isValidToken, function(req, res) {
     let _user = req.user;
     delete _user.iat;
@@ -77,6 +101,25 @@ router.post('/signup', passport.authenticate('local-signup'), auth_controller.si
         user: _user
     });
 });
+router.post('/signupLDAP', passport.authenticate('ldap-signup'), auth_controller.signupLDAP, function(req, res) {
+
+    console.log('[SIGNUP][LDAP]')
+    let _user = JSON.parse(JSON.stringify(req.user));
+    delete _user.password;
+    delete _user.emailConfirmationHash;
+
+
+    let logging_auth = new LoggingUserActivity({type: 'auth_signup', user: _user._id});
+    logging_auth.save();
+
+
+    res.send({
+        signedUp: req.signedUp,
+        message: req.flashMessage || 'Success',
+        user: _user
+    });
+});
+
 router.post('/confirm', auth_controller.confirm, function(req, res) {
 
     let _user = JSON.parse(JSON.stringify(req.user));

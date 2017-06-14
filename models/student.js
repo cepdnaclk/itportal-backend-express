@@ -8,7 +8,7 @@ const TaskStudent = require('../models/logging/task_student');
 
 // define the schema for our Student model
 var StudentSchema = mongoose.Schema({
-    email: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
     StudentDetails: { type: Schema.Types.ObjectId, ref: 'User' },
     registrationNumber: { type: String, default: 'E/XX/XXX' },
     GPA: { type: Number, default: 0.0 },
