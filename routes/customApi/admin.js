@@ -61,20 +61,21 @@ router.get('/admin/companyPreferences/:user', isAdmin, function(req, res){
 router.post('/admin/companyPreferences/set', isAdmin, function(req, res){
     
     let _preferences = req.body.data;
-
     let _error_occurred = false;
 
     _.forEach(_preferences, function(o){
         let _preferenceEntry = o;
         _preferenceEntry.organization = o.organization._id;
         _preferenceEntry.user = o.user._id;
-
+        delete _preferenceEntry._id;
+        
         CompanyPreference.update({user:new ObjectId(_preferenceEntry.user), organization: new ObjectId(_preferenceEntry.organization)}, _preferenceEntry, function(err, list){
             if(err){
                 _error_occurred = true;
+                console.log(err);
                 return;
             }
-            console.log(list);
+            console.log('[Updated List]', list);
         });
     });
 
