@@ -10,7 +10,7 @@ module.exports = {
 
     // email settings
     'testEmailEnabled': true,
-    'supportEmail': 'ishan@eng.pdn.ac.lk',
+    'supportEmail': 'itportal@eng.pdn.ac.lk',
 
     // default admin settings
     'defaultAdminEmail': 'admin@admin.com',
