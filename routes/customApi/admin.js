@@ -65,11 +65,16 @@ router.post('/admin/companyPreferences/set', isAdmin, function(req, res){
     let _error_occurred = false;
 
     _.forEach(_preferences, function(o){
-        CompanyPreference.update({user:new ObjectId(o.user._id), organization: new ObjectId(o.organization._id)}, o, function(err, list){
+        let _preferenceEntry = o;
+        _preferenceEntry.organization = o.organization._id;
+        _preferenceEntry.user = o.user._id;
+
+        CompanyPreference.update({user:new ObjectId(_preferenceEntry.user), organization: new ObjectId(_preferenceEntry.organization)}, _preferenceEntry, function(err, list){
             if(err){
                 _error_occurred = true;
                 return;
             }
+            console.log(list);
         });
     });
 
