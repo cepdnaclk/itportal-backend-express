@@ -10,6 +10,7 @@ const TaskOrganizationRep = require('../../models/logging/task_organizationRep')
 
 const _ = require('lodash');
 const EventEmitter = require('events');
+const ObjectId = require('mongoose').Types.ObjectId; 
 
 function api(router){
 
@@ -64,7 +65,7 @@ router.post('/admin/companyPreferences/set', isAdmin, function(req, res){
     let _error_occurred = false;
 
     _.forEach(_preferences, function(o){
-        CompanyPreference.update({user:o.user, organization: o.organization}, o, function(err, list){
+        CompanyPreference.update({user:new ObjectId(o.user._id), organization: new ObjectId(o.organization._id)}, o, function(err, list){
             if(err){
                 _error_occurred = true;
                 return;
