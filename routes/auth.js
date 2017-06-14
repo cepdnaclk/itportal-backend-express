@@ -103,7 +103,7 @@ router.post('/signup', passport.authenticate('local-signup'), auth_controller.si
 });
 router.post('/signupLDAP', passport.authenticate('ldap-signup'), auth_controller.signupLDAP, function(req, res) {
 
-    console.log('[SIGNUP][LDAP]')
+    console.log('[SIGNUP][LDAP] Finishing')
     let _user = JSON.parse(JSON.stringify(req.user));
     delete _user.password;
     delete _user.emailConfirmationHash;

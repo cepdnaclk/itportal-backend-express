@@ -123,8 +123,8 @@ module.exports = function(passport) {
           passwordField: 'password',
           passReqToCallback : true,
         };
-        console.log('[SIGNUP][LDAP]', _searchFilter);
-        console.log('[SIGNUP][LDAP]', opts);
+        console.log('[SIGNUP/IN][LDAP][CONFIG]', _searchFilter);
+        console.log('[SIGNUP/IN][LDAP][CONFIG]', opts);
         // return opts;
 
         callback(null, opts);
@@ -132,20 +132,16 @@ module.exports = function(passport) {
     };
 
     passport.use('ldap-login', new LdapStrategy( getLDAPConfiguration,
-        function(req, user, done) {
+        function(req, _ldap_user, done) {
 
             User.findOne({
-                email: user.mail
+                email: _ldap_user.mail
             }, function(err, user) {
                 if (err) {
                     return done(err);
                 } else if (!user) {
                     return done(null, false, {
                         message: 'Incorrect username.'
-                    });
-                } else if (!user.validPassword(password)) {
-                    return done(null, false, {
-                        message: 'Incorrect password.'
                     });
                 } else {
                     return done(null, user);
@@ -155,10 +151,10 @@ module.exports = function(passport) {
     ));
 
     passport.use('ldap-signup', new LdapStrategy( getLDAPConfiguration,
-        function(req, user, done) {
-
+        function(req, _ldap_user, done) {
+            console.log(_ldap_user);
             User.findOne({
-                email: user.mail
+                email: _ldap_user.mail
             }, function(err, user) {
                 if (err) {
                     req.flashMessage = 'Couldn\'t create your account. Please try again.';
@@ -166,7 +162,8 @@ module.exports = function(passport) {
                     return done(err);
                 } else if(!user) {
                     let user = new User();
-                    user.email = user.mail;
+                    user.email = _ldap_user.mail;
+                    user.name = _ldap_user.displayName;
 
                     user.save(function(err, newuser){
                         if(!err){

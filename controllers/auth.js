@@ -80,18 +80,22 @@ module.exports = {
     },
     signupLDAP: function(req, res, next) {
 
+        console.log('[CONTROLLER][AUTH][SignupLDAP]')
+        console.log('[CONTROLLER][AUTH][SignupLDAP]', req.user.email)
+        
         User.findOne({
             email: req.user.email
         }, function(err, user) {
             if (err) {
+                console.log(err);
                 res.status(400).send({
                     flashMessage: 'Something went wrong in creating your account.'
                 });
                 return;
             }
             if (user) {
-                user.name = req.body.name;
-                user.role = req.body.role;
+                user.name = req.user.displayName;
+                user.role = 'STUDENT';
 
                 console.log(user.role);
 
@@ -101,15 +105,6 @@ module.exports = {
                             console.log(err);
                         } else {
                             console.log('[Signup] Student created')
-                        }
-                    });
-                }
-                if(_.indexOf(user.role, "COMPANY") >= 0){
-                    OrganizationRep.create({email: user.email, OrganizationRepDetails: user._id }, function (err) {
-                        if (err){
-                            console.log(err);
-                        } else {
-                            console.log('[Signup] OrganizationRep created')
                         }
                     });
                 }
