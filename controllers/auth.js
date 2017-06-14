@@ -99,15 +99,15 @@ module.exports = {
 
                 console.log(user.role);
 
-                if(_.indexOf(user.role, "STUDENT") >= 0){
-                    Student.create({email: user.email, StudentDetails: user._id }, function (err) {
-                        if (err){
-                            console.log(err);
-                        } else {
-                            console.log('[Signup] Student created')
-                        }
-                    });
-                }
+                let _eNumber = 'E/' + req.user.uid.substr(1,2) + '/' + req.user.uid.substr(3,6);
+
+                Student.create({email: user.email, StudentDetails: user._id, registrationNumber: _eNumber}, function (err) {
+                    if (err){
+                        console.log(err);
+                    } else {
+                        console.log('[Signup] Student created')
+                    }
+                });
 
                 user.emailConfirmed = false;
                 var _emailConfirmation_shortid = shortid.generate();
