@@ -119,7 +119,7 @@ module.exports = function(passport) {
             searchBase: 'ou=people,dc=ce,dc=pdn,dc=ac,dc=lk',
             searchFilter: _searchFilter
           },
-          usernameField: 'email',
+          usernameField: 'name',
           passwordField: 'password',
           passReqToCallback : true,
         };
