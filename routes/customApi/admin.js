@@ -4,15 +4,70 @@ const TextContent = require('../../models/misc/textContent');
 const DateContent = require('../../models/misc/dateContent');
 const BooleanContent = require('../../models/misc/booleanContent');
 
+const User = require('../../models/user');
+const Student = require('../../models/student');
+const OrganizationRep = require('../../models/organizationRep');
+const Interest = require('../../models/interest');
+
 const TaskUser = require('../../models/logging/task_user');
 const TaskStudent = require('../../models/logging/task_student');
 const TaskOrganizationRep = require('../../models/logging/task_organizationRep');
+const LoggingActivity = require('../../models/logging/activity');
+const ProfileViewsCompany = require('../../models/logging/profile_views_company');
+const ProfileViews = require('../../models/logging/profile_views');
+
+const Interview = require('../../models/interviews/interviews');
+const Offers = require('../../models/interviews/offers');
 
 const _ = require('lodash');
 const EventEmitter = require('events');
 const ObjectId = require('mongoose').Types.ObjectId; 
 
 function api(router){
+
+function removeUnusedEntriesForUser(_id){
+    console.log('[removeUnusedEntriesForUser]', _id);
+    CompanyPreference.find({user:new ObjectId(_id)}).remove(function(err){console.log(err)});
+
+    Interest.find({students:{'$in': new ObjectId(_id)}}, function(err, res){
+        if(err) return;
+        _.forEach(res, function(_interest){
+            _interest.students.splice(_interest.students.indexOf(new ObjectId(_id)), 1);
+            _interest.save();
+        })
+    });
+    Interest.find({organizationRep:{'$in': new ObjectId(_id)}}, function(err, res){
+        if(err) return;
+        _.forEach(res, function(_interest){
+            _interest.organizationRep.splice(_interest.organizationRep.indexOf(new ObjectId(_id)), 1);
+            _interest.save();
+        })
+    });
+
+    Interview.find({student:new ObjectId(_id)}).remove(function(err){console.log(err)});
+    LoggingActivity.find({user:new ObjectId(_id)}).remove(function(err){console.log(err)});
+    Offers.find({student:new ObjectId(_id)}).remove(function(err){console.log(err)});
+    ProfileViewsCompany.find({viewed_by:new ObjectId(_id)}).remove(function(err){console.log(err)});
+    ProfileViews.find({viewed_by:new ObjectId(_id)}).remove(function(err){console.log(err)});
+    ProfileViews.find({viewed_profile:new ObjectId(_id)}).remove(function(err){console.log(err)});
+    TaskUser.find({user:_id}).remove(function(err){console.log(err)});
+}
+
+function removeUnusedEntriesForStudent(_id){
+    TaskStudent.find({student:new ObjectId(_id)}).remove(function(err){console.log(err)});
+}
+
+function removeUnusedEntriesForOrganizationRep(_id){
+    TaskOrganizationRep.find({organizationRep:new ObjectId(_id)}, function(err, rep){
+        if(err){
+            console.log(err);
+            return;
+        }
+        if(rep){
+            console.log('[removeUnusedEntriesForOrganizationRep][REP]', rep);
+        }
+    }).remove(function(err){console.log(err)});
+}
 
 
 router.get('/admin/companyPreferences', isAdmin, function(req, res){
@@ -86,6 +141,91 @@ router.post('/admin/companyPreferences/set', isAdmin, function(req, res){
         res.status(400).send('failed saving preferences');
     }
 });
+
+/*
+    d8888b. d88888b db      d88888b d888888b d88888b .d8888.
+    88  `8D 88'     88      88'     `~~88~~' 88'     88'  YP
+    88   88 88ooooo 88      88ooooo    88    88ooooo `8bo.
+    88   88 88~~~~~ 88      88~~~~~    88    88~~~~~   `Y8b.
+    88  .8D 88.     88booo. 88.        88    88.     db   8D
+    Y8888D' Y88888P Y88888P Y88888P    YP    Y88888P `8888Y'
+
+
+*/
+
+router.post('/admin/deleteEntry', isAdmin, function(req, res){
+    
+    console.log(req.body);
+    let _entity = req.body.entity;
+    let _id = req.body.id;
+
+    if(_entity == 'student'){
+        let _student_id = _id;
+        let _user_id;
+
+        Student.findById(_student_id, function(err, _student){
+            _user_id = _student.StudentDetails;
+            removeUnusedEntriesForUser(_user_id);
+            _student.remove();
+            res.sendStatus(200)
+        })
+        removeUnusedEntriesForStudent(_student_id);
+
+
+    }  else if(_entity == 'organizationRep'){
+
+        let _rep_id = _id;
+        let _user_id;
+
+        OrganizationRep.findById(_rep_id, function(err, _rep){
+            _user_id = _rep.OrganizationRepDetails;
+            removeUnusedEntriesForUser(_user_id);
+            _rep.remove();
+            res.sendStatus(200)
+        })
+        removeUnusedEntriesForOrganizationRep(_rep_id);
+
+
+    } else if(_entity == 'user'){
+
+        removeUnusedEntriesForUser(_id);
+
+        User.findByIdAndRemove(_id, function(err, user){
+            if(err) {
+                console.log(err)
+                res.status(400).send();
+                return;
+            }
+            if(!user){
+                console.log(err)
+                res.status(400).send('User not found');
+                return;
+            }
+
+            res.status(200).send();
+
+        });
+
+    } else {
+
+        res.status(400).send();
+        return;
+    }
+
+});
+
+
+
+/*
+    db       .d88b.   d888b  .d8888.
+    88      .8P  Y8. 88' Y8b 88'  YP
+    88      88    88 88      `8bo.
+    88      88    88 88  ooo   `Y8b.
+    88booo. `8b  d8' 88. ~8~ db   8D
+    Y88888P  `Y88P'   Y888P  `8888Y'
+
+
+*/
 
 router.get('/admin/logs', isAdmin, function(req, res){
     
