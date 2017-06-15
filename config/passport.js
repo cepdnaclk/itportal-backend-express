@@ -154,7 +154,6 @@ module.exports = function(passport) {
         function(req, _ldap_user, done) {
             console.log(_ldap_user);
             req._ldap_user = _ldap_user;
-            
             User.findOne({
                 email: _ldap_user.mail
             }, function(err, user) {
