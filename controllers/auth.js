@@ -82,6 +82,8 @@ module.exports = {
 
         console.log('[CONTROLLER][AUTH][SignupLDAP]')
         console.log('[CONTROLLER][AUTH][SignupLDAP]', req.user.email)
+        console.log('[CONTROLLER][AUTH][SignupLDAP]', req._ldap_user)
+        
         
         User.findOne({
             email: req.user.email
@@ -94,12 +96,14 @@ module.exports = {
                 return;
             }
             if (user) {
-                user.name = req.user.displayName;
+                user.name = req._ldap_user.displayName;
                 user.role = 'STUDENT';
 
-                console.log(user.role);
+                console.log('[user]', user);
+                console.log('[req.user]', req.user);
 
-                let _eNumber = 'E/' + req.user.uid.substr(1,2) + '/' + req.user.uid.substr(3,6);
+
+                let _eNumber = 'E/' + req._ldap_user.uid.substr(1,2) + '/' + req._ldap_user.uid.substr(3,6);
 
                 Student.create({email: user.email, StudentDetails: user._id, registrationNumber: _eNumber}, function (err) {
                     if (err){

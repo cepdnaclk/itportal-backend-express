@@ -153,6 +153,8 @@ module.exports = function(passport) {
     passport.use('ldap-signup', new LdapStrategy( getLDAPConfiguration,
         function(req, _ldap_user, done) {
             console.log(_ldap_user);
+            req._ldap_user = _ldap_user;
+            
             User.findOne({
                 email: _ldap_user.mail
             }, function(err, user) {
