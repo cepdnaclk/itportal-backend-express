@@ -69,6 +69,7 @@ const studentApi = require('./customApi/student')(router);
 const adminAPI = require('./customApi/admin')(router);
 const companyAPI = require('./customApi/company')(router);
 const profileAPI = require('./customApi/profile')(router);
+const userAPI = require('./customApi/user')(router);
 
 /* show welcome message */
 router.get('/', function(req, res, next) {
