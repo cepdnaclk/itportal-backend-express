@@ -95,7 +95,7 @@ module.exports = {
                 });
                 return;
             }
-            if (user) {
+            if (user && req._ldap_user.uid) {
                 user.name = req._ldap_user.displayName;
                 user.role = 'STUDENT';
 
@@ -103,7 +103,12 @@ module.exports = {
                 console.log('[req.user]', req.user);
 
 
-                let _eNumber = 'E/' + req._ldap_user.uid.substr(1,2) + '/' + req._ldap_user.uid.substr(3,6);
+                let _eNumber;
+                if(req._ldap_user.uid){
+                    _eNumber = 'E/' + req._ldap_user.uid.substr(1,2) + '/' + req._ldap_user.uid.substr(3,6);
+                } else {
+                    _eNumber = 'E/XX/XXX';
+                }
 
                 Student.create({email: user.email, StudentDetails: user._id, registrationNumber: _eNumber}, function (err) {
                     if (err){
