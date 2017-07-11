@@ -141,6 +141,38 @@ router.post('/admin/companyPreferences/set', isAdmin, function(req, res){
         res.status(400).send('failed saving preferences');
     }
 });
+/*
+    d88888b d8888b. d888888b d888888b .d8888.
+    88'     88  `8D   `88'   `~~88~~' 88'  YP
+    88ooooo 88   88    88       88    `8bo.
+    88~~~~~ 88   88    88       88      `Y8b.
+    88.     88  .8D   .88.      88    db   8D
+    Y88888P Y8888D' Y888888P    YP    `8888Y'
+
+
+*/
+
+router.post('/admin/editEntry/userRoles', isAdmin, function(req, res){
+    
+    console.log(req.body);
+    let _roles = req.body.roles;
+    let _id = req.body.id;
+    
+    if(_.isArray(_roles)){
+
+        User.findById(_id, function(err, _user){
+
+            _user.role = _roles;
+            _user.save(function(err,user){
+                res.sendStatus(200);
+            })
+        })
+    } else {
+        res.status(500).send('invalid roles' + JSON.stringify(_roles));
+    }
+
+
+});
 
 /*
     d8888b. d88888b db      d88888b d888888b d88888b .d8888.
