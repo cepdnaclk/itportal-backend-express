@@ -7,6 +7,7 @@ const BooleanContent = require('../../models/misc/booleanContent');
 const User = require('../../models/user');
 const Student = require('../../models/student');
 const OrganizationRep = require('../../models/organizationRep');
+const Organization = require('../../models/organization');
 const Interest = require('../../models/interest');
 
 const TaskUser = require('../../models/logging/task_user');
@@ -238,9 +239,27 @@ router.post('/admin/deleteEntry', isAdmin, function(req, res){
 
         });
 
+    } else if(_entity == 'company'){
+
+        Organization.findByIdAndRemove(_id, function(err, organization){
+            if(err) {
+                console.log(err)
+                res.status(400).send();
+                return;
+            }
+            if(!organization){
+                console.log(err)
+                res.status(400).send('Organization not found');
+                return;
+            }
+
+            res.status(200).send();
+
+        });
+
     } else {
 
-        res.status(400).send();
+        res.status(400).send('Invalid Entity: Not handled');
         return;
     }
 
