@@ -175,6 +175,54 @@ router.post('/admin/editEntry/userRoles', isAdmin, function(req, res){
 
 });
 
+
+router.post('/admin/uploadBulkData', isAdmin, function(req, res){
+    
+    let _entity = req.body.entity;
+    let _data = req.body.data;
+
+    if(_entity == 'company'){
+
+        
+        console.log(_entity,_data);
+
+        let bulk = Organization.collection.initializeOrderedBulkOp();
+
+        _.forEach(_data, function(o){
+
+            let _raw_data = _.cloneDeep(o);
+            delete _raw_data._id;
+
+            bulk.find({_id: new ObjectId(o._id)}).upsert().updateOne(_raw_data);
+
+            console.log(o._id);
+        })
+
+        bulk.execute(function(err, organizations){
+            if(err){
+                console.log(err);
+                res.status(400).send();
+                return;
+            }
+            if(organizations){
+                console.log('[ADMIN][UPDATE]', organizations);
+                res.status(200).send();
+            } else {
+
+                console.log('no organizations updated');
+                res.status(400).send();
+            }
+        })
+
+    } else {
+
+        res.status(400).send('Invalid Entity: Not handled');
+        return;
+    }
+
+});
+
+
 /*
     d8888b. d88888b db      d88888b d888888b d88888b .d8888.
     88  `8D 88'     88      88'     `~~88~~' 88'     88'  YP
