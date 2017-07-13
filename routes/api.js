@@ -13,6 +13,8 @@ const extracurricularModel = require('../models/extracurricular');
 const interestModel = require('../models/interest');
 const skillModel = require('../models/skill');
 
+const queue_joinCompany = require('../models/queue/joinCompany');
+
 const TaskUser = require('../models/logging/task_user');
 const TaskStudent = require('../models/logging/task_student');
 const TaskRep = require('../models/logging/task_organizationRep');
@@ -352,34 +354,29 @@ router.post('/organization/joinCompany', function(req, res){
 
 
         console.log('_user_new_organization_id', _user_new_organization_id);
-        // adding to the new organization
-        organizationModel.findById(_user_new_organization_id, function(err, newOrganization){
-            newOrganization.organizationRepEmails.push(_user_email);
-            newOrganization.save(function(err, newOrganization){
-                if(err){
-                    res.status(500).send('failed while adding representative to organization');
-                    return;
-                } else if (newOrganization){
+        // adding to the new organization join queue
 
-                    organizationRepModel.findOne({email:req.user.email}, function(err, _organizationRep){
-                        if(err){
-                            console.log(err);
-                            res.status(500).send('failed while adding organization to representative');
-                            return;
-                        }
-                        _organizationRep.company = newOrganization._id;
-                        _organizationRep.save();
-                        
-                    })
+        let _queue_joinCompany = new queue_joinCompany({
+            user_new_organization_id: _user_new_organization_id,
+            user_email: _user_email,
+        });
 
-                    res.status(200).send({status: 'success'});
+        _queue_joinCompany.save(function(err, _saved){
 
-                } else {
-                    res.status(500).send('failed while adding representative to organization: organization not found');
-                    return;
+            if(err){
+                console.log(err);
+                res.status(500).send('Failed to add join request to the queue');
+                return;
+            }
 
-                }
-            })
+            if(!_saved){
+
+                console.log('Failed to add join request to the queue');
+                res.status(500).send('Failed to add join request to the queue');
+                return;   
+            }
+
+            res.status(200).send('Join request successfully queued');
         })
 
     });

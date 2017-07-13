@@ -24,6 +24,8 @@ const _ = require('lodash');
 const EventEmitter = require('events');
 const ObjectId = require('mongoose').Types.ObjectId; 
 
+const queue_joinCompany = require('../../models/queue/joinCompany');
+
 function api(router){
 
 function removeUnusedEntriesForUser(_id){
@@ -141,6 +143,92 @@ router.post('/admin/companyPreferences/set', isAdmin, function(req, res){
     } else {
         res.status(400).send('failed saving preferences');
     }
+});
+router.post('/admin/getQueue_joinCompany', isAdmin, function(req, res){
+    
+    queue_joinCompany.find({}, function(err, queue){
+        if(err){
+            console.log(err);
+            res.status(500).send("Couldn't retrieve queue_joinCompany: Error occurred");
+            return;
+        }
+        if(queue){
+            res.send(queue);
+            return;
+        } else {
+            res.status(500).send("Couldn't retrieve queue_joinCompany: Not found")
+            return;
+        }
+    })
+});
+router.post('/admin/joinCompanyRequest', isAdmin, function(req, res){
+    
+    let _user_new_organization_id = req.body.user_new_organization_id;
+    let _user_email = req.body.user_email;
+    let _accepted = req.body.accept;
+
+    if(!_accepted){
+
+        queue_joinCompany.find({user_email: _user_email}).remove(function(err, result){
+            if(err){
+                console.log(err);
+                res.status(500).send();
+                return;
+            }
+            res.send('Queue updated; request declined');
+            return;
+        });
+    }
+    
+    Organization.findById(_user_new_organization_id, function(err, newOrganization){
+        newOrganization.organizationRepEmails.push(_user_email);
+        newOrganization.save(function(err, newOrganization){
+
+
+            if(err){
+                res.status(500).send('failed while adding representative to organization');
+                return;
+            } else if (newOrganization){
+
+                OrganizationRep.findOne({email:_user_email}, function(err, _organizationRep){
+                    if(err){
+                        console.log(err);
+                        res.status(500).send('failed while adding organization to representative');
+                        return;
+                    }
+                    if(!_organizationRep){
+                        console.log("Organization representative not found!");
+                        res.status(500).send('failed while adding organization to representative');
+                        return;
+                    }
+                    _organizationRep.company = newOrganization._id;
+                    _organizationRep.save(function(err){
+
+                        if(err) console.log(err);
+                        
+                        queue_joinCompany.find({user_email: _user_email}).remove(function(err, result){
+                            if(err){
+                                console.log(err);
+                                res.status(500).send();
+                                return;
+                            }
+
+                            res.send('Queue updated; request declined');
+                            return;
+                        });
+                    });
+
+                    
+                })
+
+
+            } else {
+                res.status(500).send('failed while adding representative to organization: organization not found');
+                return;
+
+            }
+        })
+    })
 });
 /*
     d88888b d8888b. d888888b d888888b .d8888.
