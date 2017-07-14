@@ -12,6 +12,10 @@ var OrganizationSchema = mongoose.Schema({
     organizationRepEmails: [String],
     photo: { type: String},
     description: { type: String },
+    phone: { type: String },
+    address: { type: String },
+    link1: { type: String },
+    link2: { type: String },
     newOrganization: {type: Boolean, default: true}
 },
 {
