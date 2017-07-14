@@ -7,6 +7,7 @@ const BooleanContent = require('../../models/misc/booleanContent');
 const User = require('../../models/user');
 const Student = require('../../models/student');
 const OrganizationRep = require('../../models/organizationRep');
+const Organization = require('../../models/organization');
 const Interest = require('../../models/interest');
 
 const TaskUser = require('../../models/logging/task_user');
@@ -22,6 +23,8 @@ const Offers = require('../../models/interviews/offers');
 const _ = require('lodash');
 const EventEmitter = require('events');
 const ObjectId = require('mongoose').Types.ObjectId; 
+
+const queue_joinCompany = require('../../models/queue/joinCompany');
 
 function api(router){
 
@@ -141,6 +144,92 @@ router.post('/admin/companyPreferences/set', isAdmin, function(req, res){
         res.status(400).send('failed saving preferences');
     }
 });
+router.post('/admin/getQueue_joinCompany', isAdmin, function(req, res){
+    
+    queue_joinCompany.find({}, function(err, queue){
+        if(err){
+            console.log(err);
+            res.status(500).send("Couldn't retrieve queue_joinCompany: Error occurred");
+            return;
+        }
+        if(queue){
+            res.send(queue);
+            return;
+        } else {
+            res.status(500).send("Couldn't retrieve queue_joinCompany: Not found")
+            return;
+        }
+    })
+});
+router.post('/admin/joinCompanyRequest', isAdmin, function(req, res){
+    
+    let _user_new_organization_id = req.body.user_new_organization_id;
+    let _user_email = req.body.user_email;
+    let _accepted = req.body.accept;
+
+    if(!_accepted){
+
+        queue_joinCompany.find({user_email: _user_email}).remove(function(err, result){
+            if(err){
+                console.log(err);
+                res.status(500).send();
+                return;
+            }
+            res.send('Queue updated; request declined');
+            return;
+        });
+    }
+    
+    Organization.findById(_user_new_organization_id, function(err, newOrganization){
+        newOrganization.organizationRepEmails.push(_user_email);
+        newOrganization.save(function(err, newOrganization){
+
+
+            if(err){
+                res.status(500).send('failed while adding representative to organization');
+                return;
+            } else if (newOrganization){
+
+                OrganizationRep.findOne({email:_user_email}, function(err, _organizationRep){
+                    if(err){
+                        console.log(err);
+                        res.status(500).send('failed while adding organization to representative');
+                        return;
+                    }
+                    if(!_organizationRep){
+                        console.log("Organization representative not found!");
+                        res.status(500).send('failed while adding organization to representative');
+                        return;
+                    }
+                    _organizationRep.company = newOrganization._id;
+                    _organizationRep.save(function(err){
+
+                        if(err) console.log(err);
+                        
+                        queue_joinCompany.find({user_email: _user_email}).remove(function(err, result){
+                            if(err){
+                                console.log(err);
+                                res.status(500).send();
+                                return;
+                            }
+
+                            res.send('Queue updated; request declined');
+                            return;
+                        });
+                    });
+
+                    
+                })
+
+
+            } else {
+                res.status(500).send('failed while adding representative to organization: organization not found');
+                return;
+
+            }
+        })
+    })
+});
 /*
     d88888b d8888b. d888888b d888888b .d8888.
     88'     88  `8D   `88'   `~~88~~' 88'  YP
@@ -173,6 +262,54 @@ router.post('/admin/editEntry/userRoles', isAdmin, function(req, res){
 
 
 });
+
+
+router.post('/admin/uploadBulkData', isAdmin, function(req, res){
+    
+    let _entity = req.body.entity;
+    let _data = req.body.data;
+
+    if(_entity == 'company'){
+
+        
+        console.log(_entity,_data);
+
+        let bulk = Organization.collection.initializeOrderedBulkOp();
+
+        _.forEach(_data, function(o){
+
+            let _raw_data = _.cloneDeep(o);
+            delete _raw_data._id;
+
+            bulk.find({_id: new ObjectId(o._id)}).upsert().updateOne(_raw_data);
+
+            console.log(o._id);
+        })
+
+        bulk.execute(function(err, organizations){
+            if(err){
+                console.log(err);
+                res.status(400).send();
+                return;
+            }
+            if(organizations){
+                console.log('[ADMIN][UPDATE]', organizations);
+                res.status(200).send();
+            } else {
+
+                console.log('no organizations updated');
+                res.status(400).send();
+            }
+        })
+
+    } else {
+
+        res.status(400).send('Invalid Entity: Not handled');
+        return;
+    }
+
+});
+
 
 /*
     d8888b. d88888b db      d88888b d888888b d88888b .d8888.
@@ -238,9 +375,27 @@ router.post('/admin/deleteEntry', isAdmin, function(req, res){
 
         });
 
+    } else if(_entity == 'company'){
+
+        Organization.findByIdAndRemove(_id, function(err, organization){
+            if(err) {
+                console.log(err)
+                res.status(400).send();
+                return;
+            }
+            if(!organization){
+                console.log(err)
+                res.status(400).send('Organization not found');
+                return;
+            }
+
+            res.status(200).send();
+
+        });
+
     } else {
 
-        res.status(400).send();
+        res.status(400).send('Invalid Entity: Not handled');
         return;
     }
 

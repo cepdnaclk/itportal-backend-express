@@ -12,11 +12,17 @@ var OrganizationSchema = mongoose.Schema({
     organizationRepEmails: [String],
     photo: { type: String},
     description: { type: String },
-    phone: { type: String },
-    address: { type: String },
-    link1: { type: String },
-    link2: { type: String },
-    newOrganization: {type: Boolean, default: true}
+
+    newOrganization: {type: Boolean, default: true},
+
+    address: {type: String},
+    telephone: {type: String},
+    salary: {type: String},
+
+    linksFacebook: {type: String},
+    linksLinkedin: {type: String},
+    linksGithub: {type: String},
+    linksWebpage: {type: String},
 },
 {
     timestamps: true
