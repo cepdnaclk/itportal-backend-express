@@ -15,6 +15,7 @@ var OrganizationSchema = mongoose.Schema({
 
     newOrganization: {type: Boolean, default: true},
 
+    email: {type: String},
     address: {type: String},
     phone: {type: String},
     salary: {type: String},
