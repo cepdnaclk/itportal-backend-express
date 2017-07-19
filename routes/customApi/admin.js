@@ -569,7 +569,7 @@ router.post('/admin/notification', isAdmin, function(req, res){
 
 
     mailer.sendMail_custom_message(
-        {name: _data, email: _email},
+        {name: _name, email: _email},
         _title,
         _message,
         _action_link, 
