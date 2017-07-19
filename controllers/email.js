@@ -150,5 +150,50 @@ module.exports = {
         });
 
 
+    },
+
+    sendMail_custom_message: function(user, title, message, call_to_action_url,  call_to_action_title) {
+
+        let _template = 'notification.ejs';
+        let _data = {
+            title: title  || '[ITPortal] notification',
+            heading1: user.name ? ('Hello, ' + user.name) : 'Hello',
+            message: message || "Just wondering why you didn't sign in recently.. :)",
+            call_to_action_url: call_to_action_url || (config.frontEndUrl + 'dashboard'),
+            call_to_action_title: call_to_action_title || 'View Dashboard',
+            support_email: config.supportEmail,
+            resource_url: config.frontEndUrl,
+        }
+
+        console.log('[sendMail_custom_message]')
+
+        ejs.renderFile('views/email/' + _template, _data, function(err, _htmlstring) {
+
+            if(err){
+                console.log(err);
+                return;
+            }
+
+            // setup email data with unicode symbols
+            let _plainText = 'Hello, ' + user.name + ',\r\n\r\n' + _data.message + ',\r\n' + _data.call_to_action_url;
+
+            let mailOptions = {
+                from: '"IT Portal" <itportal@eng.pdn.ac.lk>', // sender address
+                to: user.email, // list of receivers
+                subject: _data.title, // Subject line
+                text: _plainText, // plain text body
+                html: _htmlstring // html body
+            };
+
+            transporter.sendMail(mailOptions, (error, info) => {
+                if (error) {
+                    return console.log(error);
+                }
+                console.log('Message %s sent: %s', info.messageId, info.response);
+            });
+
+        });
+
+
     }
 }

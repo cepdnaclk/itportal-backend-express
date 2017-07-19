@@ -20,6 +20,9 @@ const ProfileViews = require('../../models/logging/profile_views');
 const Interview = require('../../models/interviews/interviews');
 const Offers = require('../../models/interviews/offers');
 
+
+const mailer = require('../../controllers/email');
+
 const _ = require('lodash');
 const EventEmitter = require('events');
 const ObjectId = require('mongoose').Types.ObjectId; 
@@ -534,6 +537,50 @@ router.post('/admin/update/date', isAdmin, function(req, res){
     })
 
     res.send('success');
+    return;
+
+});
+
+/*
+    d8b   db  .d88b.  d888888b d888888b d88888b d888888b  .o88b.  .d8b.  d888888b d888888b  .d88b.  d8b   db
+    888o  88 .8P  Y8. `~~88~~'   `88'   88'       `88'   d8P  Y8 d8' `8b `~~88~~'   `88'   .8P  Y8. 888o  88
+    88V8o 88 88    88    88       88    88ooo      88    8P      88ooo88    88       88    88    88 88V8o 88
+    88 V8o88 88    88    88       88    88~~~      88    8b      88~~~88    88       88    88    88 88 V8o88
+    88  V888 `8b  d8'    88      .88.   88        .88.   Y8b  d8 88   88    88      .88.   `8b  d8' 88  V888
+    VP   V8P  `Y88P'     YP    Y888888P YP      Y888888P  `Y88P' YP   YP    YP    Y888888P  `Y88P'  VP   V8P
+
+
+*/
+
+
+router.post('/admin/notification', isAdmin, function(req, res){
+
+    console.log('[ADMIN] /admin/notification')
+    let _data = req.body;
+
+    console.log('[ADMIN]', _data)
+
+    let _name = _data.name;
+    let _email = _data.email;
+    let _title = _data.title;
+    let _message = _data.message;
+    let _action_link = _data.action_link;
+    let _action_title = _data.action_title;
+
+
+    mailer.sendMail_custom_message(
+        {name: _data, email: _email},
+        _title,
+        _message,
+        _action_link, 
+        _action_title);
+
+
+
+    res.json({
+        message: 'Notification queued to be sent'
+    });
+
     return;
 
 });

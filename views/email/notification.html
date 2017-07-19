@@ -1,0 +1,122 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <title><%= title %></title>
+        <style type="text/css">
+        #outlook a {padding:0;}
+        body{width:100% !important; -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; margin:0; padding:0; font-family: 'Roboto', sans-serif}
+        .ExternalClass {width:100%;}
+        .ExternalClass, .ExternalClass p, .ExternalClass span, .ExternalClass font, .ExternalClass td, .ExternalClass div {line-height: 100%;}
+        #backgroundTable {margin:0; padding:0; width:100% !important; line-height: 100% !important;}
+        img {outline:none; text-decoration:none; -ms-interpolation-mode: bicubic;}
+        a img {border:none;}
+        .image_fix {display:block;}
+        p {margin: 1em 0;}
+        h1, h2, h3, h4, h5, h6 {color: black; font-weight: 300;}
+        h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {color: blue; font-weight: 300;}
+        h1 a:active, h2 a:active,  h3 a:active, h4 a:active, h5 a:active, h6 a:active {
+        color: red !important;
+        }
+        h1 a:visited, h2 a:visited,  h3 a:visited, h4 a:visited, h5 a:visited, h6 a:visited {
+        color: purple !important;
+        }
+        table td {border-collapse: collapse; max-width: 600px;}
+        table { border-collapse:collapse; mso-table-lspace:0pt; mso-table-rspace:0pt; }
+        a {color: #41b883; text-decoration: none;}
+        a:link { color: #41b883;  text-decoration: none;}
+        a:visited { color: blue; }
+        a:hover { color: #298f62; }
+        h3{color: #fff; margin: 0; line-height: 1.2; font-size: 11pt; opacity: 0.7}
+        .button{
+            color: #fff !important;
+            background: #41b883;
+            padding: 15px 40px;
+            display: inline-block;
+            border-radius: 4px;
+        }
+        .button:hover{
+            background: #298f62 !important;
+        }
+        .bg{
+            background-color: #111c22;
+            background-image: url('<%= resource_url %>img/bg.jpg');
+            background-size: cover;
+            background-position: center;
+        }
+        @media only screen and (max-device-width: 480px) {
+            a[href^="tel"], a[href^="sms"] {
+                text-decoration: none;
+                color: black;
+                pointer-events: none;
+                cursor: default;
+            }
+            .mobile_link a[href^="tel"], .mobile_link a[href^="sms"] {
+                text-decoration: default;
+                color: #41b883 !important;
+                pointer-events: auto;
+                cursor: default;
+            }
+        }
+        @media only screen and (min-device-width: 768px) and (max-device-width: 1024px) {
+            a[href^="tel"], a[href^="sms"] {
+                text-decoration: none;
+                color: blue;
+                pointer-events: none;
+                cursor: default;
+            }
+            .mobile_link a[href^="tel"], .mobile_link a[href^="sms"] {
+                text-decoration: default;
+                color: #41b883 !important;
+                pointer-events: auto;
+                cursor: default;
+            }
+        }
+        @media only screen and (-webkit-min-device-pixel-ratio: 2) {
+        }
+        @media only screen and (-webkit-device-pixel-ratio:.75){
+        }
+        @media only screen and (-webkit-device-pixel-ratio:1){
+        }
+        @media only screen and (-webkit-device-pixel-ratio:1.5){
+        }
+        </style>
+
+    </head>
+    <body>
+        <table cellpadding="0" cellspacing="0" border="0" id="backgroundTable">
+            <tr class="bg" style="background-color: #111c22; text-align: center; ">
+                <td style="padding: 4px;">
+                    
+                </td>
+            </tr>
+            <tr>
+                <td style="border-top: solid #ddd thin;padding: 70px 30px; font-size: 11pt">
+                    <h1><%= heading1 %></h1>
+                    <p><%= message %></p>
+                    <a href="<%= call_to_action_url %>" class="button"><%= call_to_action_title %></a>
+                </td>
+            </tr>
+            <tr>
+                <td style="border-top: solid #ddd thin;padding: 20px 30px; font-size: 11pt">
+                    <p>
+                        If you need any assistance, send an email to <a href="mailto:<%= support_email %>"><%= support_email %></a></p>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: center;">
+                        <img src="<%= resource_url %>img/logo_email.png" style="top: 0; position: relative; margin: 0 0 -42px 0; text-align: center; margin-bottom: -42px;" />
+                    </td>
+                </tr>
+                <tr class="bg" style="background-color: #111c22; text-align: center; ">
+                    <td style="padding: 30px 30px; padding-top: 60px; ">
+                        <h2 style="color: #fff; margin: 0; margin-bottom: 5px; line-height: 1.2">Industrial Training Portal</h2>
+                        <h3>Department of Computer Engineering</h3>
+                        <h3>University of Peradeniya</h3>
+                        <h3>Sri Lanka</h3>
+                    </td>
+                </tr>
+            </table>
+        </body>
+    </html>

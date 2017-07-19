@@ -37,6 +37,25 @@ router.get('/testmailhtml', function(req, res) {
 
 });
 
+router.get('/testmailhtml_notification', function(req, res) {
+    if (config.testEmailEnabled) {
+        mailer.sendMail_custom_message(
+            {name: 'Test User', email: 'ahtimadhusanka@gmail.com'},
+            'Notification Title',
+            'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Necessitatibus suscipit, est adipisci vero recusandae rerum ratione deserunt. Ad neque, tenetur quas ipsum obcaecati libero non nam, vero quod, quis porro!',
+            config.frontEndUrl, 
+            'Click Here');
+        res.json({
+            message: 'testmail sent!'
+        });
+    } else {
+        res.json({
+            message: 'Test disabled; testEmailEnabled: false'
+        });
+    }
+
+});
+
 router.get('/testimageresize', function(req, res) {
     Jimp.read('public/test.jpg').
     then(function(img) {
