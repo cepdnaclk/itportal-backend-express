@@ -402,13 +402,13 @@ router.post('/interest/addProfile', function(req, res){
 
         if(_interest){
 
-            let _usertype = _user.role[0];
+            let _usertype = _user.role;
 
-            if(_usertype === "STUDENT"){
+            if(_usertype.indexOf("STUDENT") >= 0){
                 _interest.students.push(_user._id)
                 studentModel.addInterest(_user._id, _user_new_interest_id);
             }
-            if(_usertype === "COMPANY"){
+            if(_usertype.indexOf("COMPANY") >= 0){
                 _interest.organizationRep.push(_user._id)
                 organizationRepModel.addInterest(_user._id, _user_new_interest_id);
             }
