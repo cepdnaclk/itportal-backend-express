@@ -392,7 +392,12 @@ router.post('/admin/deleteEntry', isAdmin, function(req, res){
                 return;
             }
 
-            res.status(200).send();
+            // remove company preferences
+            CompanyPreference.remove({organization: new ObjectId(organization._id)}, {justOne: false}, function(err, result){
+                res.status(200).send();
+            })
+
+
 
         });
 

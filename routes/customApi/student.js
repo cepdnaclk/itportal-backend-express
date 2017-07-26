@@ -4,6 +4,7 @@ const Interview = require('../../models/interviews/interviews');
 const Offer = require('../../models/interviews/offers');
 const Student = require('../../models/student');
 const Project = require('../../models/project');
+const Interest = require('../../models/interest');
 
 const GetGPA = require('../../controllers/getResults');
 
@@ -403,6 +404,59 @@ router.post('/student/updateRegNumber', function(req, res){
         }
     })
 });
+
+
+router.post('/student/interest/remove', function(req, res){
+
+    let _interest_id = req.body.interestId;
+    let _student_id = req.body.studentId;
+
+    Student.findById(_student_id, function(err, _student){
+        if(err){
+            console.log(err);
+            res.status(500).send(err);
+            return;
+        }
+        if(!_student){
+            console.log('Invalid student ID');
+            res.status(500).send('Invalid student ID');
+            return;
+        }
+        _student.interests.splice(new ObjectId(_student.interests.indexOf(_interest_id)),1);
+        _student.save(function(_err,_saved_student){
+
+            if(_err){
+                console.log(_err);
+                res.status(500).send(_err);
+                return;
+            }
+            if(!_saved_student){
+                console.log('Student interests were not updated');
+                res.status(500).send('Interests were not updated');
+                return;
+            }
+
+            Interest.findById(_interest_id, function(err, _interest){
+                if(err){ console.log(err); res.status(500).send('Interest fields were not updated'); return}
+                if(!_interest) { console.log('Interest not found'); res.status(500).send('Interest not found'); return}
+                _interest.students.splice(_interest.students.indexOf(new ObjectId(_student_id), 1));
+                _interest.save(function(err, _saved_interest){
+                    if(err){
+                        console.log(err);
+                        return;
+                    }
+                    if(!_saved_interest) {
+                        console.log('interest_not_saved');
+                        return;
+                    }
+                    console.log('interests were saved');
+                })
+            })
+            res.status(200).send();
+        })
+    })
+});
+
 
 function isStudent(req, res, next){
     console.log('checking if a student...')

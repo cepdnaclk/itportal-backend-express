@@ -6,6 +6,7 @@ const OrganizationRep = require('../../models/organizationRep');
 const Student = require('../../models/student');
 const Logging = require('../../models/logging/activity');
 const Project = require('../../models/project');
+const Interest = require('../../models/interest');
 
 const TaskUser = require('../../models/logging/task_user');
 const TaskRep = require('../../models/logging/task_organizationRep');
@@ -325,6 +326,58 @@ router.get('/company/summary', function(req, res){
             _eventEmitter.emit('done', '_tasks_list_rep');
             _eventEmitter.emit('done', '_company_profile_count');
         }
+    })
+});
+
+
+router.post('/companyRep/interest/remove', function(req, res){
+
+    let _interest_id = req.body.interestId;
+    let _company_id = req.body.companyId;
+
+    OrganizationRep.findById(_company_id, function(err, _company){
+        if(err){
+            console.log(err);
+            res.status(500).send(err);
+            return;
+        }
+        if(!_company){
+            console.log('Invalid company ID');
+            res.status(500).send('Invalid company ID');
+            return;
+        }
+        _company.interests.splice(new ObjectId(_company.interests.indexOf(_interest_id)),1);
+        _company.save(function(_err,_saved_company){
+
+            if(_err){
+                console.log(_err);
+                res.status(500).send(_err);
+                return;
+            }
+            if(!_saved_company){
+                console.log('Company interests were not updated');
+                res.status(500).send('Interests were not updated');
+                return;
+            }
+
+            Interest.findById(_interest_id, function(err, _interest){
+                if(err){ console.log(err); res.status(500).send('Interest fields were not updated'); return}
+                if(!_interest) { console.log('Interest not found'); res.status(500).send('Interest not found'); return}
+                _interest.organizationRep.splice(_interest.organizationRep.indexOf(new ObjectId(_company_id), 1));
+                _interest.save(function(err, _saved_interest){
+                    if(err){
+                        console.log(err);
+                        return;
+                    }
+                    if(!_saved_interest) {
+                        console.log('interest_not_saved');
+                        return;
+                    }
+                    console.log('interests were saved');
+                })
+            })
+            res.status(200).send();
+        })
     })
 });
 
