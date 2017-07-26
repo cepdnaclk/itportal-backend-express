@@ -382,6 +382,30 @@ router.post('/organization/joinCompany', function(req, res){
     });
 
 })
+router.get('/organization/joinCompany', function(req, res){
+    // console.log(req.user);
+    // console.log(req.body);
+
+    let _user = JSON.parse(JSON.stringify(req.user));
+    
+    queue_joinCompany.findOne({user_email: _user.email}, function(err, queue){
+        if(err){
+            console.log(err);
+            res.status(500).send(err);
+            return;
+        }
+        if(queue){
+            res.send(queue);
+            return;
+        } else {
+            res.status(200).send();
+            return;
+        }
+
+    })
+
+})
+
 router.post('/interest/addProfile', function(req, res){
     // console.log(req.user);
     // console.log(req.body);
