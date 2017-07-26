@@ -170,7 +170,7 @@ router.post('/admin/joinCompanyRequest', isAdmin, function(req, res){
     let _user_email = req.body.user_email;
     let _accepted = req.body.accept;
 
-    if(!_accepted){
+    if(_accepted == false){
 
         queue_joinCompany.find({user_email: _user_email}).remove(function(err, result){
             if(err){
@@ -181,57 +181,60 @@ router.post('/admin/joinCompanyRequest', isAdmin, function(req, res){
             res.send('Queue updated; request declined');
             return;
         });
+    } else {
+        
+        Organization.findById(_user_new_organization_id, function(err, newOrganization){
+            newOrganization.organizationRepEmails.push(_user_email);
+            newOrganization.save(function(err, newOrganization){
+
+
+                if(err){
+                    res.status(500).send('failed while adding representative to organization');
+                    return;
+                } else if (newOrganization){
+
+                    OrganizationRep.findOne({email:_user_email}, function(err, _organizationRep){
+                        if(err){
+                            console.log(err);
+                            res.status(500).send('failed while adding organization to representative');
+                            return;
+                        }
+                        if(!_organizationRep){
+                            console.log("Organization representative not found!");
+                            res.status(500).send('failed while adding organization to representative');
+                            return;
+                        }
+                        _organizationRep.company = newOrganization._id;
+                        _organizationRep.save(function(err){
+
+                            if(err) console.log(err);
+                            
+                            queue_joinCompany.find({user_email: _user_email}).remove(function(err, result){
+                                if(err){
+                                    console.log(err);
+                                    res.status(500).send();
+                                    return;
+                                }
+
+                                res.send('Queue updated; request declined');
+                                return;
+                            });
+                        });
+
+                        
+                    })
+
+
+                } else {
+                    res.status(500).send('failed while adding representative to organization: organization not found');
+                    return;
+
+                }
+            })
+        })
+        
     }
     
-    Organization.findById(_user_new_organization_id, function(err, newOrganization){
-        newOrganization.organizationRepEmails.push(_user_email);
-        newOrganization.save(function(err, newOrganization){
-
-
-            if(err){
-                res.status(500).send('failed while adding representative to organization');
-                return;
-            } else if (newOrganization){
-
-                OrganizationRep.findOne({email:_user_email}, function(err, _organizationRep){
-                    if(err){
-                        console.log(err);
-                        res.status(500).send('failed while adding organization to representative');
-                        return;
-                    }
-                    if(!_organizationRep){
-                        console.log("Organization representative not found!");
-                        res.status(500).send('failed while adding organization to representative');
-                        return;
-                    }
-                    _organizationRep.company = newOrganization._id;
-                    _organizationRep.save(function(err){
-
-                        if(err) console.log(err);
-                        
-                        queue_joinCompany.find({user_email: _user_email}).remove(function(err, result){
-                            if(err){
-                                console.log(err);
-                                res.status(500).send();
-                                return;
-                            }
-
-                            res.send('Queue updated; request declined');
-                            return;
-                        });
-                    });
-
-                    
-                })
-
-
-            } else {
-                res.status(500).send('failed while adding representative to organization: organization not found');
-                return;
-
-            }
-        })
-    })
 });
 /*
     d88888b d8888b. d888888b d888888b .d8888.
