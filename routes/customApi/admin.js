@@ -184,9 +184,10 @@ router.post('/admin/joinCompanyRequest', isAdmin, function(req, res){
     } else {
         
         Organization.findById(_user_new_organization_id, function(err, newOrganization){
-            newOrganization.organizationRepEmails.push(_user_email);
+            if(newOrganization.organizationRepEmails.indexOf(_user_email) < 0){
+                newOrganization.organizationRepEmails.push(_user_email);
+            }
             newOrganization.save(function(err, newOrganization){
-
 
                 if(err){
                     res.status(500).send('failed while adding representative to organization');
@@ -234,6 +235,129 @@ router.post('/admin/joinCompanyRequest', isAdmin, function(req, res){
         })
         
     }
+    
+});
+router.post('/admin/joinCompany_forced', isAdmin, function(req, res){
+    
+    let _user_new_organization_id = req.body.organization_id;
+    let _user_email = req.body.organizationRep_email;
+
+
+        
+        Organization.findById(_user_new_organization_id, function(err, newOrganization){
+            if(newOrganization.organizationRepEmails.indexOf(_user_email) < 0){
+                newOrganization.organizationRepEmails.push(_user_email);
+            }
+            newOrganization.save(function(err, newOrganization){
+
+                if(err){
+                    res.status(500).send('failed while adding representative to organization');
+                    return;
+                } else if (newOrganization){
+
+                    OrganizationRep.findOne({email:_user_email}, function(err, _organizationRep){
+                        if(err){
+                            console.log(err);
+                            res.status(500).send('failed while adding organization to representative');
+                            return;
+                        }
+                        if(!_organizationRep){
+                            console.log("Organization representative not found!");
+                            res.status(500).send('failed while adding organization to representative');
+                            return;
+                        }
+                        _organizationRep.company = newOrganization._id;
+                        _organizationRep.save(function(err){
+
+                            if(err) console.log(err);
+                            
+                            queue_joinCompany.find({user_email: _user_email}).remove(function(err, result){
+                                if(err){
+                                    console.log(err);
+                                    res.status(500).send();
+                                    return;
+                                }
+
+                                res.send('Queue updated; request(s) declined');
+                                return;
+                            });
+                        });
+
+                        
+                    })
+
+
+                } else {
+                    res.status(500).send('failed while adding representative to organization: organization not found');
+                    return;
+
+                }
+            })
+        })
+    
+});
+router.post('/admin/removeFromCompany_forced', isAdmin, function(req, res){
+    
+    let _user_new_organization_id = req.body.organization_id;
+    let _user_email = req.body.organizationRep_email;
+
+
+        
+        Organization.findById(_user_new_organization_id, function(err, newOrganization){
+            if(newOrganization.organizationRepEmails.indexOf(_user_email) >= 0){
+                newOrganization.organizationRepEmails.splice(newOrganization.organizationRepEmails.indexOf(_user_email), 1);
+            }
+
+            newOrganization.save(function(err, newOrganization){
+
+                if(err){
+                    res.status(500).send('failed while remove representative to organization');
+                    return;
+                } else if (newOrganization){
+
+                    OrganizationRep.findOne({email:_user_email}, function(err, _organizationRep){
+                        if(err){
+                            console.log(err);
+                            res.status(500).send('failed while remove organization to representative');
+                            return;
+                        }
+                        if(!_organizationRep){
+                            console.log("Organization representative not found!");
+                            res.status(500).send('failed while remove organization to representative');
+                            return;
+                        }
+
+                        if(_organizationRep.company == _user_new_organization_id){
+                            _organizationRep.company = null;
+                        }
+
+                        _organizationRep.save(function(err){
+
+                            if(err) console.log(err);
+                            
+                            queue_joinCompany.find({user_email: _user_email}).remove(function(err, result){
+                                if(err){
+                                    console.log(err);
+                                    res.status(500).send();
+                                    return;
+                                }
+
+                                res.send('Queue updated; request(s) declined');
+                                return;
+                            });
+                        });
+
+                        
+                    })
+
+
+                } else {
+                    res.status(500).send('failed while adding representative to organization: organization not found');
+                    return;
+
+                }
+            })
+        })
     
 });
 /*
@@ -383,6 +507,7 @@ router.post('/admin/deleteEntry', isAdmin, function(req, res){
 
     } else if(_entity == 'company'){
 
+        console.log('removing company', _id);
         Organization.findByIdAndRemove(_id, function(err, organization){
             if(err) {
                 console.log(err)
@@ -390,15 +515,14 @@ router.post('/admin/deleteEntry', isAdmin, function(req, res){
                 return;
             }
             if(!organization){
-                console.log(err)
+                console.log(organization)
                 res.status(400).send('Organization not found');
                 return;
             }
 
             // remove company preferences
-            CompanyPreference.remove({organization: new ObjectId(organization._id)}, {justOne: false}, function(err, result){
-                res.status(200).send();
-            })
+            CompanyPreference.find({organization: new ObjectId(organization._id)}).remove();
+            res.status(200).send();
 
 
 
