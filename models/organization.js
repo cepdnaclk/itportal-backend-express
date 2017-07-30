@@ -19,6 +19,7 @@ var OrganizationSchema = mongoose.Schema({
     address: {type: String},
     phone: {type: String},
     salary: {type: String},
+    vacancies: {type: Number, default: 0},
 
     linksFacebook: {type: String},
     linksLinkedin: {type: String},
