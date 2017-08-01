@@ -289,14 +289,33 @@ router.get('/all/student/cv/:file_name', function(req, res){
 
     let _file_name= req.params.file_name;
     let _index = _file_name.indexOf('-user-');
+
+    let _extension = _file_name.substr(_file_name.indexOf('.'));
     let _student_id = _file_name.substr(0,_file_name.indexOf('-user-'));
 
-    if(!_file_name || !_student_id || (_index != 24)){
+    if(!_file_name || !_student_id || !_extension || (_index != 24)){
         res.status(400).send('Bad request...' + _file_name + ' ::: ' + _student_id + ' ::: index:' + _index);
         return;
     }
 
-    res.sendFile(path.resolve('uploads/'+_file_name));
+    Students.findById(_student_id)
+    .populate('StudentDetails')
+    .exec(function(err, student){
+        if(err){
+            console.error(err);
+            res.send(400);
+            return;
+        }
+        if(student){
+            res.download(path.resolve('uploads/'+_file_name), (student.StudentDetails.name.replaceAll('.','_') + _extension));
+            return;
+        } else {
+            console.log('no student record found');
+            res.send(400);
+            return;
+        }
+    })
+
 
 });
 
