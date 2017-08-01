@@ -284,6 +284,21 @@ router.get('/profile/organization/:id', function(req, res){
 
 });
 
+router.get('/profile/student/cv/:file_name', function(req, res){
+
+    let _file_name= req.params.file_name;
+    let _index = _file_name.indexOf('-user-');
+    let _student_id = _file_name.substr(0,_file_name.indexOf('-user-'));
+
+    if(!_file_name || !_student_id || (_index != 24)){
+        res.status(400).send('Bad request...' + _file_name + ' ::: ' + _student_id + ' ::: index:' + _index);
+        return;
+    }
+
+    res.sendFile('../../uploads/'+_file_name , { root : __dirname});
+
+});
+
 router.post('/profile/organizationReps/organization', function(req, res){
 
     let _reps = req.body.reps;
