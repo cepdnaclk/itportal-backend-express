@@ -307,7 +307,7 @@ router.get('/all/student/cv/:file_name', function(req, res){
             return;
         }
         if(student){
-            res.download(path.resolve('uploads/'+_file_name), (student.StudentDetails.name.replaceAll('.','_') + _extension));
+            res.download(path.resolve('uploads/'+_file_name), (student.StudentDetails.name.replace(/\./g,'').replace(/\s/g, '_') + _extension));
             return;
         } else {
             console.log('no student record found');
