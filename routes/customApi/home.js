@@ -14,6 +14,7 @@ const _ = require('lodash');
 const GetGPA = require('../../controllers/getResults');
 
 const EventEmitter = require('events');
+const path = require('path');
 
 function api(router){
 
@@ -284,7 +285,7 @@ router.get('/profile/organization/:id', function(req, res){
 
 });
 
-router.get('/profile/student/cv/:file_name', function(req, res){
+router.get('/all/student/cv/:file_name', function(req, res){
 
     let _file_name= req.params.file_name;
     let _index = _file_name.indexOf('-user-');
@@ -295,7 +296,7 @@ router.get('/profile/student/cv/:file_name', function(req, res){
         return;
     }
 
-    res.sendFile('../../uploads/'+_file_name , { root : __dirname});
+    res.sendFile(path.resolve('uploads/'+_file_name));
 
 });
 
