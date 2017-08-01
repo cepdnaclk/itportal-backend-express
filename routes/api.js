@@ -211,6 +211,50 @@ router.put('/photo/organization', upload.single('photo'), function(req, res, nex
         });
     });
 })
+router.put('/resume/student', upload.single('resume'), function(req, res, next) {
+
+    let _student_id = req.body.student_id;
+    let _file_name = req.file.filename;
+    let _file = req.file.path;
+
+    console.log('/resume/student', _student_id, _file_name, _file);
+
+    let _user = JSON.parse(JSON.stringify(req.user));
+    let logging_activity = new LoggingActivity({type: 'api_resume_student', user: _user._id});
+    logging_activity.save();
+
+
+    // console.log('public/resume/student/' + _file_name);
+
+    studentModel.findById(_student_id, function(err, student) {
+        if (err) {
+            res.status(400).send({
+                flashMessage: 'Something went wrong in updating your account.'
+            });
+            return;
+        }
+        if (student) {
+
+            student.resume = _file_name;
+            student.save(function(err, newstudent) {
+                if (!err) {
+                    req.student = newstudent;
+
+                    res.status(200).send({
+                        student: newstudent,
+                        flashMessage: 'Resume uploaded successfully'
+                    });
+                }
+            })
+
+        } else {
+            res.status(400).send('Failed to find the student');
+            return;
+        }
+
+
+    });
+})
 
 // APIs
 /*

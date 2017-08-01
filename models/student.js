@@ -20,6 +20,8 @@ var StudentSchema = mongoose.Schema({
     cocurriculars: [{ type: Schema.Types.ObjectId, ref: 'Cocurricular' }],
     extracurriculars: [{ type: Schema.Types.ObjectId, ref: 'Extracurricular' }],
     interests: [{ type: Schema.Types.ObjectId, ref: 'Interest' }],
+
+    resume: {type: String }
 },
     {
         timestamps: true
