@@ -6,10 +6,10 @@
         <title><%= title %></title>
         <style type="text/css">
         #outlook a {padding:0;}
-        body{width:100% !important; -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; margin:0; padding:0; font-family: 'Roboto', sans-serif; line-height: 1.1}
+        body{width:100% !important; -webkit-text-size-adjust:100% -ms-text-size-adjust:100%; margin:0; padding:0; font-family: 'Roboto', sans-serif; line-height: 1.3 !important;}
         .ExternalClass {width:100%;}
         .ExternalClass, .ExternalClass p, .ExternalClass span, .ExternalClass font, .ExternalClass td, .ExternalClass div {line-height: 100%;}
-        #backgroundTable {margin:0; padding:0; width:100% !important; line-height: 100% !important;}
+        #backgroundTable {margin:0 auto; padding:0; width:100% !important; max-width: 600px; line-height: 100% !important; border: solid thin #eee;}
         img {outline:none; text-decoration:none; -ms-interpolation-mode: bicubic;}
         a img {border:none;}
         .image_fix {display:block;}
@@ -92,25 +92,21 @@
                 </td>
             </tr>
             <tr>
-                <td style="border-top: solid #ddd thin;padding: 70px 30px; font-size: 11pt">
+                <td style="border-top: solid #ddd thin;padding: 30px 60px; font-size: 11pt">
                     <h1><%= heading1 %></h1>
                     <p><%= message %></p>
                     <a href="<%= call_to_action_url %>" class="button"><%= call_to_action_title %></a>
                 </td>
             </tr>
             <tr>
-                <td style="border-top: solid #ddd thin;padding: 20px 30px; font-size: 11pt">
+                <td style="border-top: solid #ddd thin;padding: 20px 60px; font-size: 11pt">
                     <p>
                         If you need any assistance, send an email to <a href="mailto:<%= support_email %>"><%= support_email %></a></p>
                     </td>
                 </tr>
-                <tr>
-                    <td style="text-align: center;">
-                        <img src="<%= resource_url %>img/logo_email.png" style="top: 0; position: relative; text-align: center; margin-bottom: -42px;" />
-                    </td>
-                </tr>
                 <tr class="bg" style="background-color: #111c22; text-align: center; ">
                     <td style="padding: 30px 30px;">
+                        <img src="<%= resource_url %>img/logo_email.png" style="top: 0; position: relative; text-align: center; margin-bottom: -42px;" />
                         <h2 style="color: #fff; margin: 0; margin-bottom: 5px; line-height: 1.2">Industrial Training Portal</h2>
                         <h3>Department of Computer Engineering</h3>
                         <h3>University of Peradeniya</h3>
