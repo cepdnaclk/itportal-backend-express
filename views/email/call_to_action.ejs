@@ -1,15 +1,15 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title><%= title %></title>
         <style type="text/css">
         #outlook a {padding:0;}
         body{width:100% !important; -webkit-text-size-adjust:100% -ms-text-size-adjust:100%; margin:0; padding:0; font-family: 'Roboto', sans-serif; line-height: 1.3 !important;}
         .ExternalClass {width:100%;}
-        .ExternalClass, .ExternalClass p, .ExternalClass span, .ExternalClass font, .ExternalClass td, .ExternalClass div {line-height: 100%;}
-        #backgroundTable {margin:0 auto; padding:0; width:100% !important; max-width: 600px; line-height: 100% !important; border: solid thin #eee;}
+        .ExternalClass, .ExternalClass p, .ExternalClass span, .ExternalClass font, .ExternalClass td, .ExternalClass div {line-height: 1.2;}
+        #backgroundTable {margin:0 auto; padding:0; width:100% !important; max-width: 600px; line-height: 1.2 !important; border: solid thin #eee;}
         img {outline:none; text-decoration:none; -ms-interpolation-mode: bicubic;}
         a img {border:none;}
         .image_fix {display:block;}
@@ -84,36 +84,36 @@
         </style>
 
     </head>
-    <body>
-        <table cellpadding="0" cellspacing="0" border="0" id="backgroundTable">
-            <tr class="bg" style="background-color: #111c22; text-align: center; ">
-                <td style="padding: 4px;">
+    <body style="-webkit-text-size-adjust: 100% -ms-text-size-adjust:100%;margin: 0;padding: 0;font-family: 'Roboto', sans-serif;width: 100% !important;line-height: 1.3 !important;">
+        <table cellpadding="0" cellspacing="0" border="0" id="backgroundTable" style="border-collapse: collapse;mso-table-lspace: 0pt;mso-table-rspace: 0pt;margin: 0 auto;padding: 0;max-width: 600px;border: solid thin #eee;width: 100% !important;line-height: 1.2 !important;">
+            <tr class="bg" style="background-color: #111c22;text-align: center;background-image: url(<%= resource_url %>img/bg.jpg);background-size: cover;background-position: center;">
+                <td style="padding: 4px;border-collapse: collapse;max-width: 600px;">
                     
                 </td>
             </tr>
             <tr>
-                <td style="border-top: solid #ddd thin;padding: 30px 60px; font-size: 11pt">
-                    <h1><%= heading1 %></h1>
-                    <p><%= message %></p>
-                    <a href="<%= call_to_action_url %>" class="button"><%= call_to_action_title %></a>
+                <td style="border-top: solid #ddd thin;padding: 30px 60px;font-size: 11pt;border-collapse: collapse;max-width: 600px;">
+                    <h1 style="color: black;font-weight: 300;"><%= heading1 %></h1>
+                    <p style="margin: 1em 0;"><%= message %></p>
+                    <a href="<%= call_to_action_url %>" class="button" style="color: #fff !important;text-decoration: none;background: #41b883;padding: 15px 40px;display: inline-block;border-radius: 4px;"><%= call_to_action_title %></a>
                 </td>
             </tr>
             <tr>
-                <td style="border-top: solid #ddd thin;padding: 20px 60px; font-size: 11pt">
-                    <p>You can also follow the link below to <%= call_to_action_title %></p>
-                    <p><a href="<%= call_to_action_url %>"><%= call_to_action_url %></a>
-                    <br />
-                    <p>
-                        If you need any assistance, send an email to <a href="mailto:<%= support_email %>"><%= support_email %></a></p>
+                <td style="border-top: solid #ddd thin;padding: 20px 60px;font-size: 11pt;border-collapse: collapse;max-width: 600px;">
+                    <p style="margin: 1em 0;">You can also follow the link below to <%= call_to_action_title %></p>
+                    <p style="margin: 1em 0;"><a href="<%= call_to_action_url %>" style="color: #41b883;text-decoration: none;"><%= call_to_action_url %></a>
+                    <br>
+                    </p><p style="margin: 1em 0;">
+                        If you need any assistance, send an email to <a href="mailto:<%= support_email %>" style="color: #41b883;text-decoration: none;"><%= support_email %></a></p>
                     </td>
                 </tr>
-                <tr class="bg" style="background-color: #111c22; text-align: center; ">
-                    <td style="padding: 30px 30px;">
-                        <img src="<%= resource_url %>img/logo_email.png" style="top: 0; position: relative; text-align: center; margin-bottom: -42px;" />
-                        <h2 style="color: #fff; margin: 0; margin-bottom: 5px; line-height: 1.2">Industrial Training Portal</h2>
-                        <h3>Department of Computer Engineering</h3>
-                        <h3>University of Peradeniya</h3>
-                        <h3>Sri Lanka</h3>
+                <tr class="bg" style="background-color: #111c22;text-align: center;background-image: url(<%= resource_url %>img/bg.jpg);background-size: cover;background-position: center;">
+                    <td style="padding: 30px 30px;border-collapse: collapse;max-width: 600px;">
+                        <img src="<%= resource_url %>img/logo_email.png" style="top: 0;position: relative;text-align: center;margin-bottom: -42px;outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;">
+                        <h2 style="color: #fff;margin: 0;margin-bottom: 5px;line-height: 1.2;font-weight: 300;">Industrial Training Portal</h2>
+                        <h3 style="color: #fff;font-weight: 300;margin: 0;line-height: 1.2;font-size: 11pt;opacity: 0.7;">Department of Computer Engineering</h3>
+                        <h3 style="color: #fff;font-weight: 300;margin: 0;line-height: 1.2;font-size: 11pt;opacity: 0.7;">University of Peradeniya</h3>
+                        <h3 style="color: #fff;font-weight: 300;margin: 0;line-height: 1.2;font-size: 11pt;opacity: 0.7;">Sri Lanka</h3>
                     </td>
                 </tr>
             </table>
