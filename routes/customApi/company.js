@@ -122,9 +122,8 @@ router.post('/company/interview/new', function(req, res){
     let _companyRep_email = req.body.companyRepEmail;
     let _student_id = req.body.studentId;
     let _interview_time = req.body.time;
-    let _interview_location = req.body.location;
-    let _interview_location_lat = req.body.location_lat;
-    let _interview_location_lon = req.body.location_lon;
+    let _interview_date = req.body.date;
+    
     let _interview_type = req.body.type;
     let _interview_type_other = req.body.type_other;
     let _interview_notes = req.body.notes;

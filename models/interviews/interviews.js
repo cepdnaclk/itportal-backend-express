@@ -11,7 +11,7 @@ var InterviewSchema = mongoose.Schema({
     date: { type: String },
 
     type: {
-        type: [String],
+        type: String,
         enum: ['ON_LOCATION', 'OVER_THE_PHONE', 'SKYPE', 'HANGOUTS', 'OTHER'],
         default: 'ON_LOCATION'
     },
