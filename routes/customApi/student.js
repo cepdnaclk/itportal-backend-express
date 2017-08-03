@@ -215,7 +215,7 @@ router.post('/student/offers/accept', isStudent, function(req, res){
                     let _user = _saved_offer.student;
                     let _organization = _saved_offer.company;
 
-                    CompanyPreference.findAll({user: _user, organization: _organization}, function(err, _preferences){
+                    CompanyPreference.find({user: _user, organization: _organization}, function(err, _preferences){
 
                         _.forEach(_preferences, function(_preference){
 
@@ -276,14 +276,32 @@ router.post('/student/offers/reject', isStudent, function(req, res){
 
         if(_.isEqual(offer.student, new ObjectId(_student_id))){
             offer.accepted = false;
-            offer.save(function(err, offer){
+            offer.save(function(err, _saved_offer){
                 if(err){
                     res.status(400).send('couldn\'t save offer');
                     return;
                 }
 
-                console.log( 'accepted offer', _offer_id, '  student:', _student_id );
-                res.status(200).send('success');
+                if(_saved_offer){
+                    let _user = _saved_offer.student;
+                    let _organization = _saved_offer.company;
+
+                    CompanyPreference.find({user: _user, organization: _organization}, function(err, _preferences){
+
+                        _.forEach(_preferences, function(_preference){
+
+                            _preference.student_accepted = false;
+                            _preference.save();
+                            
+                        })
+
+                        console.log( 'rejected offer', _offer_id, '  student:', _student_id );
+                        res.status(200).send('success');
+                        
+                    })
+
+                    
+                }
 
             })
         } else {
