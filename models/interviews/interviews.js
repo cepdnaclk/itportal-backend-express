@@ -7,6 +7,17 @@ var InterviewSchema = mongoose.Schema({
     student: { type: Schema.Types.ObjectId, ref: 'User' },
     company: { type: Schema.Types.ObjectId, ref: 'Organization' },
 
+	time: { type: Date },
+
+    type: {
+        type: [String],
+        enum: ['ON_LOCATION', 'OVER_THE_PHONE', 'SKYPE', 'HANGOUTS', 'OTHER'],
+        default: 'ON_LOCATION'
+    },
+
+   type_other: { type: String },
+   notes: { type: String },
+
 }, {
     timestamps: true
 });

@@ -13,6 +13,8 @@ var CompanyPreferenceSchema = mongoose.Schema({
     company_interviewed: {type: Boolean, default: false},
     company_accepted: {type: Boolean, default: false},
 
+    student_accepted: {type: Boolean},
+
 }, {
     timestamps: true
 });

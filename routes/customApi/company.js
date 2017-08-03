@@ -70,6 +70,23 @@ router.get('/company/companyPreferences/:email', isCompany, function(req, res){
 });
 
 
+router.post('/company/companyPreferences/set/status', isCompany, function(req, res){
+    
+    let preference = req.body.preference;
+
+    CompanyPreference.findOneAndUpdate({'_id': new ObjectId(preference._id)}, function(err, pref){
+        if(err){
+            console.log(err);
+            res.status(500).send('Error updating preferences status')
+            return;
+        }
+
+        res.status(200).send();
+        return;
+
+    });
+});
+
 router.post('/company/projects', isCompany, function(req, res){
     let _user = req.body.user;
     let _project_ids = _.map(req.body.projects, function(o){
@@ -96,8 +113,16 @@ router.post('/company/projects', isCompany, function(req, res){
 });
 
 router.post('/company/interview/new', function(req, res){
+
     let _companyRep_email = req.body.companyRepEmail;
     let _student_id = req.body.studentId;
+    let _interview_time = req.body.time;
+    let _interview_location = req.body.location;
+    let _interview_location_lat = req.body.location_lat;
+    let _interview_location_lon = req.body.location_lon;
+    let _interview_type = req.body.type;
+    let _interview_type_other = req.body.type_other;
+    let _interview_notes = req.body.notes;
 
     let _company_id;
 
@@ -126,8 +151,17 @@ router.post('/company/interview/new', function(req, res){
             _company_id = company._id;
 
             let interview = new Interview();
+
             interview.student = _student_id;
             interview.company = _company_id;
+            interview.time = _interview_time;
+            interview.location = _interview_location;
+            interview.location_lat = _interview_location_lat;
+            interview.location_lon = _interview_location_lon;
+            interview.type = _interview_type;
+            interview.type_other = _interview_type_other;
+            interview.notes = _interview_notes;
+
             console.log('[interview]: _company_id', _company_id)
             interview.save(function(err, interview){
                 if(err){
