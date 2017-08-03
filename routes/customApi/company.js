@@ -73,15 +73,19 @@ router.get('/company/companyPreferences/:email', isCompany, function(req, res){
 router.post('/company/companyPreferences/set/status', isCompany, function(req, res){
     
     let preference = req.body.preference;
-    console.log(preference);
+    console.log('[preference] ', preference._id);
 
-    CompanyPreference.findOneAndUpdate({'_id': new ObjectId(preference._id)}, function(err, pref){
+    let _pref_id = new ObjectId(preference._id);
+    delete preference['_id'];
+
+    CompanyPreference.findOneAndUpdate({'_id': _pref_id}, preference, function(err, pref){
         if(err){
             console.log(err);
             res.status(500).send('Error updating preferences status')
             return;
         }
 
+        // console.log(pref);
         res.status(200).send();
         return;
 
