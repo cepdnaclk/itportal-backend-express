@@ -156,7 +156,7 @@ module.exports = {
 
         let _template = 'notification.ejs';
         let _data = {
-            title: '[ITPortal]' + title  || '[ITPortal] Notification',
+            title: '[ITPortal] ' + title  || '[ITPortal] Notification',
             heading1: (user.name?('Hello, ' + user.name) : 'Hello'),
             message: message || "Just wondering why you didn't sign in recently.. :)",
             call_to_action_url: call_to_action_url || (config.frontEndUrl + 'dashboard'),
