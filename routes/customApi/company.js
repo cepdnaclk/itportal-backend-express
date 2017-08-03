@@ -73,6 +73,7 @@ router.get('/company/companyPreferences/:email', isCompany, function(req, res){
 router.post('/company/companyPreferences/set/status', isCompany, function(req, res){
     
     let preference = req.body.preference;
+    console.log(preference);
 
     CompanyPreference.findOneAndUpdate({'_id': new ObjectId(preference._id)}, function(err, pref){
         if(err){
@@ -155,9 +156,7 @@ router.post('/company/interview/new', function(req, res){
             interview.student = _student_id;
             interview.company = _company_id;
             interview.time = _interview_time;
-            interview.location = _interview_location;
-            interview.location_lat = _interview_location_lat;
-            interview.location_lon = _interview_location_lon;
+
             interview.type = _interview_type;
             interview.type_other = _interview_type_other;
             interview.notes = _interview_notes;
@@ -165,6 +164,7 @@ router.post('/company/interview/new', function(req, res){
             console.log('[interview]: _company_id', _company_id)
             interview.save(function(err, interview){
                 if(err){
+                    console.log(err);
                     res.status(400).send(err);
                     return;
                 }
