@@ -159,6 +159,7 @@ router.post('/company/interview/new', function(req, res){
             interview.student = _student_id;
             interview.company = _company_id;
             interview.time = _interview_time;
+            interview.date = _interview_date;
 
             interview.type = _interview_type;
             interview.type_other = _interview_type_other;
