@@ -8,7 +8,7 @@ var InterviewSchema = mongoose.Schema({
     company: { type: Schema.Types.ObjectId, ref: 'Organization' },
 
     time: { type: String },
-    date: { type: String }
+    date: { type: String },
 
     type: {
         type: [String],
