@@ -278,16 +278,20 @@ router.get('/company/get/student/:userId', function(req, res){
 });
 
 router.get('/company/summary', function(req, res){
-    let _profile_count = 0;
-    let _company_profile_count = 0;
+    let _profile_views_count = 0;
+    let _profile_views = {};
+    let _company_profile_views_count = 0;
+    let _company_profile_views = {};
     let _tasks_list_user = {};
     let _tasks_list_rep = {};
 
     let _eventEmitter = new EventEmitter();
 
     let _items = {
-        _profile_count: false,
-        _company_profile_count: false,
+        _profile_views_count: false,
+        _profile_views: false,
+        _company_profile_views_count: false,
+        _company_profile_views: false,
         _tasks_list_user: false,
         _tasks_list_rep: false,
     }
@@ -306,8 +310,10 @@ router.get('/company/summary', function(req, res){
         if(_finished){
 
             res.status(200).send({
-                profile_views: _profile_count,
-                profile_views_company: _company_profile_count,
+                profile_views_count: _profile_views_count,
+                profile_views: _profile_views,
+                company_profile_views_count: _company_profile_views_count,
+                company_profile_views: _company_profile_views,
                 tasks_list_user: _tasks_list_user,
                 tasks_list_rep: _tasks_list_rep,
             });
@@ -315,13 +321,29 @@ router.get('/company/summary', function(req, res){
         }
     });
 
-    ProfileViews.count({viewed_profile: new ObjectId(req.user._id)})
-    .exec(function(err,count){
-        if(count){
-            _profile_count = count;
+    // ProfileViews.count({viewed_profile: new ObjectId(req.user._id)})
+    // .exec(function(err,count){
+    //     if(count){
+    //         _profile_count = count;
+    //     }
+
+    //     _eventEmitter.emit('done', '_profile_count');
+    // });
+
+    ProfileViews.find({viewed_profile: new ObjectId(req.user._id)})
+    .populate('viewed_by')
+    .exec(function(err,_t_profile_views_count){
+        if(err){
+            console.log(err);
         }
 
-        _eventEmitter.emit('done', '_profile_count');
+        if(_t_profile_views_count){
+            _profile_views_count = _t_profile_views_count.length;
+            _profile_views = _t_profile_views_count;
+        }
+
+        _eventEmitter.emit('done', '_profile_views_count');
+        _eventEmitter.emit('done', '_profile_views');
     });
 
     TaskUser.findOne({user: new ObjectId(req.user._id)})
@@ -335,7 +357,8 @@ router.get('/company/summary', function(req, res){
 
     OrganizationRep.findOne({email: req.user.email}, function(err, rep){
         if(err){
-            _eventEmitter.emit('done', '_company_profile_count');
+            _eventEmitter.emit('done', '_company_profile_views_count');
+            _eventEmitter.emit('done', '_company_profile_views');
             _eventEmitter.emit('done', '_tasks_list_rep');
             return;
         }
@@ -351,20 +374,38 @@ router.get('/company/summary', function(req, res){
                 _eventEmitter.emit('done', '_tasks_list_rep');
             });
 
-            ProfileViews_company.count({viewed_company: new ObjectId(rep.company)}, function(err, _company_count){
+            // ProfileViews_company.count({viewed_company: new ObjectId(rep.company)}, function(err, _company_count){
+            //     if(err){
+            //         console.log(err);
+            //     }
+            //     if(_company_count){
+            //         _company_profile_count = _company_count;
+            //     }
+            //     _eventEmitter.emit('done', '_company_profile_count');
+            // })
+
+            ProfileViews_company.find({viewed_company: new ObjectId(rep.company)})
+            .populate('viewed_by')
+            .exec(function(err, _t_company_views){
                 if(err){
                     console.log(err);
                 }
-                if(_company_count){
-                    _company_profile_count = _company_count;
+                if(_t_company_views){
+                    _company_profile_views_count = _t_company_views.length;
+                    _company_profile_views = _t_company_views;
                 }
-                _eventEmitter.emit('done', '_company_profile_count');
+                _eventEmitter.emit('done', '_company_profile_views_count');
+                _eventEmitter.emit('done', '_company_profile_views');
             })
+
         } else {
             _eventEmitter.emit('done', '_tasks_list_rep');
-            _eventEmitter.emit('done', '_company_profile_count');
+            _eventEmitter.emit('done', '_company_profile_views_count');
+            _eventEmitter.emit('done', '_company_profile_views');
         }
-    })
+    });
+
+
 });
 
 

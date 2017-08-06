@@ -325,14 +325,16 @@ router.get('/student/getResults', function(req, res){
 
 router.get('/student/summary', function(req, res){
 
-    let _profile_count = 0;
+    let _profile_views_count = 0;
+    let _profile_views = {};
     let _tasks_list_user = {};
     let _tasks_list_student = {};
 
     let _eventEmitter = new EventEmitter();
 
     let _items = {
-        _profile_count: false,
+        _profile_views_count: false,
+        _profile_views: false,
         _tasks_list_user: false,
         _tasks_list_student: false,
     }
@@ -352,7 +354,8 @@ router.get('/student/summary', function(req, res){
         if(_finished){
 
             res.status(200).send({
-                profile_count: _profile_count,
+                profile_views_count: _profile_views_count,
+                profile_views: _profile_views,
                 tasks_list_user: _tasks_list_user,
                 tasks_list_student: _tasks_list_student,
             });
@@ -360,16 +363,19 @@ router.get('/student/summary', function(req, res){
         }
     });
 
-    ProfileViews.count({viewed_profile: new ObjectId(req.user._id)})
-    .exec(function(err,count){
+    ProfileViews.find({viewed_profile: new ObjectId(req.user._id)})
+    .populate('viewed_by')
+    .exec(function(err,_t_profile_views){
         if(err){
             res.status(400).send();
             return;
         }
-        if(count){
-            _profile_count = count;
+        if(_t_profile_views){
+            _profile_views_count = _t_profile_views.length;
+            _profile_views = _t_profile_views;
         }
-        _eventEmitter.emit('done', '_profile_count');
+        _eventEmitter.emit('done', '_profile_views_count');
+        _eventEmitter.emit('done', '_profile_views');
 
     })
 
