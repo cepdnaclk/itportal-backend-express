@@ -14,6 +14,7 @@ const TaskUser = require('../../models/logging/task_user');
 const TaskStudent = require('../../models/logging/task_student');
 const TaskOrganizationRep = require('../../models/logging/task_organizationRep');
 const LoggingActivity = require('../../models/logging/activity');
+
 const ProfileViewsCompany = require('../../models/logging/profile_views_company');
 const ProfileViews = require('../../models/logging/profile_views');
 
@@ -522,6 +523,7 @@ router.post('/admin/deleteEntry', isAdmin, function(req, res){
 
             // remove company preferences
             CompanyPreference.find({organization: new ObjectId(organization._id)}).remove();
+            ProfileViewsCompany.find({viewed_company: new ObjectId(organization._id)}).remove();
             res.status(200).send();
 
 
