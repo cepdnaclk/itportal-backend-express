@@ -1,7 +1,7 @@
 const main = require('./socket/main');
 
 module.exports = function(http){
-    var io = require('SOCKET.IO')(http);
+    var io = require('socket.io')(http);
 
     io.on('connection', function(socket){
         console.log('[SOCKET.IO] a user connected');
