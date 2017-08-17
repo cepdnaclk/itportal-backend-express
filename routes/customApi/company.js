@@ -291,6 +291,21 @@ router.post('/company/offer/new', function(req, res){
         }
     })
 
+    User.findById(_student_id, function(err, _user){
+        if(err){
+            console.error(err);
+        } else if(!_user) {
+            console.error('[newInterview] User not found, to send an email');
+        } else {
+
+            mailer.sendMail_custom_message(
+                {name: _user.name, email: _user.email},
+                "New Internship Offer",
+                "Congratulations! You've got a new internship offer, go ahead and check the details at the Decision Desk.");
+
+        }
+
+    })
 
     // Get the user's company id
     Organization.findOne({ organizationRepEmails: { "$in" : [_companyRep_email]}} , function(err, company){
