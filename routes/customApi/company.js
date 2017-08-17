@@ -208,13 +208,13 @@ router.get('/company/interview/all/:companyrepemail', function(req, res){
         if(company){
             _company_id = company._id;
 
-            interview.find({company: new ObjectId(_company_id)}, function(err, _interviews){
+            Interview.find({company: new ObjectId(_company_id)}, function(err, _interviews){
                 if(err) {
                     console.error(err);
                     res.status(400).send('Something went wrong while retrieving interviews');
                     return;
                 }
-                if(!interviews){
+                if(!_interviews){
                     console.log('No interviews found to be scheduled for this company');
                 }
 
@@ -232,6 +232,24 @@ router.get('/company/interview/all/:companyrepemail', function(req, res){
 
 
 
+});
+
+router.post('/company/interview/remove/:interview_id', function(req, res){
+
+    let _interview_id = req.params.interview_id;
+
+    Interview.findByIdAndRemove( _interview_id, function(err, result){
+        if(err) {
+            console.error(err);
+            res.status(400).send('Something went wrong while removing interviews');
+            return;
+        }
+        if(!result){
+            console.log('Interview not found');
+        }
+
+        res.status(200).send(result);
+    })
 });
 
 router.post('/company/offer/new', function(req, res){
