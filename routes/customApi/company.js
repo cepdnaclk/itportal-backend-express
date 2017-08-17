@@ -2,6 +2,7 @@ const CompanyPreference = require('../../models/interviews/companyPreferences');
 const Interview = require('../../models/interviews/interviews');
 const Offer = require('../../models/interviews/offers');
 const Organization = require('../../models/organization');
+const User = require('../../models/user');
 const OrganizationRep = require('../../models/organizationRep');
 const Student = require('../../models/student');
 const Logging = require('../../models/logging/activity');
@@ -145,7 +146,7 @@ router.post('/company/interview/new', function(req, res){
         }
     })
 
-    User.findOneById(_student_id, function(err, _user){
+    User.findById(_student_id, function(err, _user){
         if(err){
             console.error(err);
         } else if(!_user) {
@@ -155,7 +156,7 @@ router.post('/company/interview/new', function(req, res){
             mailer.sendMail_custom_message(
                 {name: _user.name, email: _user.email},
                 "New Interview Scheduled",
-                'Well done! You\'ve got a new interview scheduled, go ahead and check the details at the Decision Desk.');
+                "Well done! You've got a new interview scheduled, go ahead and check the details at the Decision Desk.");
 
         }
 
