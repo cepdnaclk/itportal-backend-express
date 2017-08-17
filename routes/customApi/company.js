@@ -14,6 +14,8 @@ const TaskRep = require('../../models/logging/task_organizationRep');
 const ProfileViews = require('../../models/logging/profile_views');
 const ProfileViews_company = require('../../models/logging/profile_views_company');
 
+const mailer = require('../../controllers/email');
+
 const _ = require('lodash');
 const ObjectId = require('mongoose').Types.ObjectId; 
 const EventEmitter = require('events');
@@ -141,6 +143,22 @@ router.post('/company/interview/new', function(req, res){
                 });
             }
         }
+    })
+
+    User.findOneById(_student_id, function(err, _user){
+        if(err){
+            console.error(err);
+        } else if(!_user) {
+            console.error('[newInterview] User not found, to send an email');
+        } else {
+
+            mailer.sendMail_custom_message(
+                {name: _user.name, email: _user.email},
+                "New Interview Scheduled",
+                'Well done! You\'ve got a new interview scheduled, go ahead and check the details at the Decision Desk.');
+
+        }
+
     })
 
     // Get the user's company id
