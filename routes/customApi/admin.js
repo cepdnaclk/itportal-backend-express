@@ -551,6 +551,26 @@ router.post('/admin/deleteEntry', isAdmin, function(req, res){
 
 */
 
+router.get('/admin/interviews', isAdmin, function(req, res){
+    
+    Interview.find({})
+    .populate('student')
+    .populate('company')
+    .sort({'date': -1, 'time': -1})
+    .exec(function(err, _interviews)){
+        if(err){
+            console.error(err);
+            res.status(400).send('failed to retrieve interviews');
+            return;
+        }
+        if(!_interviews){
+            res.status(400).send('no interviews found');
+            return;
+        }
+        res.status(200).send(_interviews);
+    }
+
+});
 router.get('/admin/logs', isAdmin, function(req, res){
     
 
