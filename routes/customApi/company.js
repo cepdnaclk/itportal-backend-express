@@ -193,6 +193,47 @@ router.post('/company/interview/new', function(req, res){
 
 });
 
+router.get('/company/interview/all/:companyrepemail', function(req, res){
+
+    let _companyRep_email = req.params.companyrepemail;
+
+    // Get the user's company id
+    Organization.findOne({ organizationRepEmails: { "$in" : [_companyRep_email]}} , function(err, company){
+        // console.log(err, company)
+        if(err) {
+            console.error('something went wrong: failed to receive company details')
+            res.status(400).send('failed to receive company details');
+            return true;
+        }
+        if(company){
+            _company_id = company._id;
+
+            interview.find({company: new ObjectId(_company_id)}, function(err, _interviews){
+                if(err) {
+                    console.error(err);
+                    res.status(400).send('Something went wrong while retrieving interviews');
+                    return;
+                }
+                if(!interviews){
+                    console.log('No interviews found to be scheduled for this company');
+                }
+
+                res.status(200).send(_interviews);
+            })
+    
+        } else {
+            console.error('something went wrong: failed to receive company details: NOT FOUND')
+            res.status(400).send('failed to receive company details');
+            return true;
+        }
+
+
+    })
+
+
+
+});
+
 router.post('/company/offer/new', function(req, res){
     let _companyRep_email = req.body.companyRepEmail;
     let _student_id = req.body.studentId;
