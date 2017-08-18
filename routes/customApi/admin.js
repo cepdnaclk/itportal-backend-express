@@ -557,7 +557,7 @@ router.get('/admin/interviews', isAdmin, function(req, res){
     .populate('student')
     .populate('company')
     .sort({'date': -1, 'time': -1})
-    .exec(function(err, _interviews)){
+    .exec(function(err, _interviews){
         if(err){
             console.error(err);
             res.status(400).send('failed to retrieve interviews');
@@ -568,7 +568,7 @@ router.get('/admin/interviews', isAdmin, function(req, res){
             return;
         }
         res.status(200).send(_interviews);
-    }
+    });
 
 });
 router.get('/admin/logs', isAdmin, function(req, res){
