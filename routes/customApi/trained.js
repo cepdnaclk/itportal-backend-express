@@ -16,6 +16,7 @@ router.post('/trained/companyToSkills',function(req, res){
         output += data.toString();
     });
     py.stderr.on('data', function(data){
+        output += data.toString();
         console.log(data);
     });
     py.stdout.on('end', function(){
