@@ -53,6 +53,8 @@ const Jimp = require('jimp');
 
 router.use(addReqUserIfLoggedIn);
 const homeAPI = require('./customApi/home')(router);
+const trainedAPI = require('./customApi/trained')(router);
+
 
 router.use(isLoggedIn);
 
