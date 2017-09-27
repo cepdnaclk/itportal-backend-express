@@ -104,7 +104,7 @@ X_train_tfidf.shape
 from sklearn.naive_bayes import MultinomialNB
 # print y
 
-clf = MultinomialNB().fit(X_train_tfidf, y)
+clf = MultinomialNB().fit(X_train_tfidf, list(y))
 
 # X_test = [
 # 	'Java C MySQL',
@@ -129,5 +129,5 @@ predicted = clf.predict(X_new_tfidf)
 output = ''
 for doc, category in zip(X_test, predicted):
 	output +=  ('%r => %s' % (doc, category)) + '\n'
-		
+
 print output
