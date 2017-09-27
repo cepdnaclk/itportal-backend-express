@@ -238,6 +238,30 @@ router.post('/admin/joinCompanyRequest', isAdmin, function(req, res){
     }
     
 });
+
+router.get('/admin/get/student_skills', function(req, res){
+
+
+    Student.find({})
+    .populate(['skills'])
+    .exec(function(err, students){
+        if(err) {
+            console.log(err);
+            res.status(400).send();
+            return
+        }
+
+        if(students){
+            console.log(students._id);
+            res.status(200).send(students);
+            return;
+        }
+
+        res.send(400).send('students not found');
+
+    })
+});
+
 router.post('/admin/joinCompany_forced', isAdmin, function(req, res){
     
     let _user_new_organization_id = req.body.organization_id;
